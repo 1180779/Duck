@@ -1,0 +1,1 @@
+﻿global using GI = Duck.Graphics.GraphicsContext;

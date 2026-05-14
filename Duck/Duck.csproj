@@ -1,0 +1,70 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <LangVersion>14</LangVersion>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+        <OutputType>WinExe</OutputType>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <None Remove="Shaders\gPass.hlsli" />
+        <None Remove="Shaders\gPassPS.hlsl" />
+        <None Remove="Shaders\lighting.hlsli" />
+        <None Remove="Shaders\lightPassPS.hlsl" />
+        <None Remove="Shaders\lightPassVS.hlsl" />
+        <None Remove="Shaders\particle.hlsli" />
+        <None Remove="Shaders\particlePS.hlsl" />
+        <None Remove="Shaders\particleVS.hlsl" />
+        <None Remove="Shaders\shadowVolume.hlsli" />
+        <None Remove="Shaders\shadowVolumeGS.hlsl" />
+        <None Remove="Shaders\shadowVolumeVS.hlsl" />
+        <None Remove="Shaders\tex.png" />
+        <None Remove="Shaders\unlitPS.hlsl" />
+        <None Remove="Shaders\unlitVS.hlsl" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="Shaders\constantBuffers.hlsli" />
+        <EmbeddedResource Include="Shaders\blinnPhong.hlsli" />
+        <EmbeddedResource Include="Shaders\blinnPhongPS.hlsl" />
+        <EmbeddedResource Include="Shaders\blinnPhongVS.hlsl" />
+        <EmbeddedResource Include="Shaders\gPass.hlsli" />
+        <EmbeddedResource Include="Shaders\gPassPS.hlsl" />
+        <EmbeddedResource Include="Shaders\gPassVS.hlsl" />
+        <EmbeddedResource Include="Shaders\lighting.hlsli" />
+        <EmbeddedResource Include="Shaders\lightPassPS.hlsl" />
+        <EmbeddedResource Include="Shaders\lightPassVS.hlsl" />
+        <EmbeddedResource Include="Shaders\particle.hlsli" />
+        <EmbeddedResource Include="Shaders\particlePS.hlsl" />
+        <EmbeddedResource Include="Shaders\particleVS.hlsl" />
+        <EmbeddedResource Include="Shaders\shadowVolume.hlsli" />
+        <EmbeddedResource Include="Shaders\shadowVolumeGS.hlsl" />
+        <EmbeddedResource Include="Shaders\shadowVolumeVS.hlsl" />
+        <EmbeddedResource Include="Shaders\unlitPS.hlsl" />
+        <EmbeddedResource Include="Shaders\unlitVS.hlsl" />
+        <EmbeddedResource Include="Shaders\ambientPassPS.hlsl" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <Content Include="Meshes\**" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="Textures\**" CopyToOutputDirectory="PreserveNewest" />
+    </ItemGroup>
+
+    <ItemGroup>
+<!--        <EmbeddedResource Include="Textures\rain2.png" />-->
+<!--        <EmbeddedResource Include="Textures\rain3.png" />-->
+    </ItemGroup>
+    
+    <ItemGroup>
+      <PackageReference Include="Silk.NET.Input" Version="2.23.0" />
+      <PackageReference Include="Silk.NET.Windowing" Version="2.23.0" />
+      <PackageReference Include="StbImageSharp" Version="2.30.15" />
+      <PackageReference Include="Vortice.D3DCompiler" Version="3.8.3" />
+      <PackageReference Include="Vortice.Direct3D11" Version="3.8.3" />
+      <PackageReference Include="Vortice.DirectX" Version="3.8.3" />
+    </ItemGroup>
+
+</Project>
