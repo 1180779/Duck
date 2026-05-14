@@ -1,5 +1,7 @@
 using System.Text;
+
 using SharpGen.Runtime;
+
 using Vortice.D3DCompiler;
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -15,7 +17,7 @@ public class Shader : IDisposable
 
     public Shader(string vsPath, string? psPath, InputElementDescription[] inputElements, string gsPath = null)
     {
-        var device = GraphicsContext.Instance.Device;
+        ID3D11Device device = GI.Instance.Device;
 
         int lastDot = vsPath.LastIndexOf('.');
         int secondLastDot = lastDot > 0 ? vsPath.LastIndexOf('.', lastDot - 1) : -1;

@@ -1,8 +1,29 @@
 ﻿namespace Duck.Graphics;
 
-public class ShaderManager
+public sealed class ShaderManager : IDisposable
 {
-    public const string BasePath = "Duck.Shaders.";
+    private readonly Dictionary<ShaderType, Shader> _shaders = new();
+
+    public void Dispose()
+    {
+        foreach (Shader shader in _shaders.Values)
+        {
+            shader.Dispose();
+        }
+
+        _shaders.Clear();
+    }
+
+    public void AddShader(ShaderType shaderType, Shader shader)
+    {
+        _shaders.Add(shaderType, shader);
+    }
+
+    public Shader GetShader(ShaderType shaderType)
+    {
+        return _shaders.TryGetValue(shaderType, out Shader? shader) ? shader : throw new Exception("Shader not found");
+    }
+
     public enum ShaderType
     {
         Unlit,
@@ -12,32 +33,5 @@ public class ShaderManager
         AmbientPass,
         ShadowVolume,
         Particle
-    }
-    
-    private readonly Dictionary<ShaderType, Shader> _shaders = new();
-
-    public Shader GetShader(ShaderType shaderType)
-    {
-        if (_shaders.TryGetValue(shaderType, out var shader))
-        {
-            return shader;
-        }
-
-        throw new Exception($"Shader not found");
-    }
-
-    public void AddShader(ShaderType shaderType, Shader shader)
-    {
-        _shaders.Add(shaderType, shader);
-    }
-
-    public void DisposeAll()
-    {
-        foreach (var shader in _shaders.Values)
-        {
-            shader.Dispose();
-        }
-
-        _shaders.Clear();
     }
 }

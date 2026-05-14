@@ -1,6 +1,8 @@
 using System.Numerics;
 using System.Runtime.InteropServices;
+
 using Duck.Entities;
+
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
 using Vortice.Mathematics;
@@ -337,7 +339,7 @@ public class RenderingPipeline : IDisposable
         context.OMSetRenderTargets(GI.Instance.RenderTargetView);
         context.ClearRenderTargetView(GI.Instance.RenderTargetView, new Color4(0.1f, 0.1f, 0.1f, 1.0f));
         context.ClearDepthStencilView(
-            GraphicsContext.Instance.DepthStencilView,
+            GI.Instance.DepthStencilView,
             DepthStencilClearFlags.Stencil,
             1.0f,
             0
@@ -348,7 +350,7 @@ public class RenderingPipeline : IDisposable
         _clipPlaneBuffer?.Bind(4);
         
         context.ClearDepthStencilView(
-            GraphicsContext.Instance.DepthStencilView,
+            GI.Instance.DepthStencilView,
             DepthStencilClearFlags.Stencil,
             1.0f,
             0
@@ -362,7 +364,7 @@ public class RenderingPipeline : IDisposable
         context.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
         context.OMSetBlendState(null);
         context.ClearDepthStencilView(
-            GraphicsContext.Instance.DepthStencilView,
+            GI.Instance.DepthStencilView,
             DepthStencilClearFlags.Stencil,
             1.0f,
             0
@@ -379,7 +381,7 @@ public class RenderingPipeline : IDisposable
             _mirrorCamera.UpdateAndBindViewProjBuffer();
         
             context.ClearDepthStencilView(
-                GraphicsContext.Instance.DepthStencilView,
+                GI.Instance.DepthStencilView,
                 DepthStencilClearFlags.Depth,
                 1.0f,
                 0
