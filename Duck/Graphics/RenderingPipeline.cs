@@ -23,26 +23,8 @@ public sealed class RenderingPipeline : IDisposable
     private readonly ID3D11BlendState? _alphaBlendState;
     private readonly ConstantBuffer<ConstantBufferSurfaceColor>? _colorBuffer;
     private readonly ID3D11RasterizerState? _cullBackState;
-    private readonly ID3D11RasterizerState? _cullFrontState;
-    private readonly ID3D11RasterizerState? _cullNoneState;
-
     private readonly ID3D11DepthStencilState? _defaultDepthState;
-    private readonly ID3D11DepthStencilState? _lightPassDepthState;
-
-    private readonly Camera? _mirrorCamera;
-
-    /// Depth test-write and stencil test == ref
-    private readonly ID3D11DepthStencilState? _mirrorGPassDepthState;
-
-    private readonly ID3D11DepthStencilState? _mirrorNoDepthWriteState;
-
-    // Mirror-specific
-
-    /// Depth test read-only and stencil write
-    private readonly ID3D11DepthStencilState? _mirrorStencilWriteState;
-
     private readonly ConstantBuffer<ConstantBufferModel>? _modelBuffer;
-    private readonly ID3D11BlendState? _noColorWriteBlendState;
     private readonly ID3D11DepthStencilState? _noDepthState;
     private readonly ID3D11DepthStencilState? _noDepthWriteState;
     private readonly List<OpaqueCommand> _opaques = [];
@@ -87,103 +69,6 @@ public sealed class RenderingPipeline : IDisposable
         };
         _cullBackState = device.CreateRasterizerState(cullBackDesc);
 
-        RasterizerDescription cullFrontDesc = new()
-        {
-            CullMode = CullMode.Front,
-            FillMode = FillMode.Solid,
-            FrontCounterClockwise = false,
-            DepthClipEnable = true
-        };
-        _cullFrontState = device.CreateRasterizerState(cullFrontDesc);
-
-        DepthStencilDescription shadowDepthDesc = new()
-        {
-            DepthEnable = true,
-            DepthWriteMask = DepthWriteMask.Zero,
-            DepthFunc = ComparisonFunction.Less,
-            StencilEnable = true,
-            StencilReadMask = 0xFF,
-            StencilWriteMask = 0xFF,
-            FrontFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Decrement,
-                StencilPassOp = StencilOperation.Keep,
-                StencilFunc = ComparisonFunction.Always
-            },
-            BackFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Increment,
-                StencilPassOp = StencilOperation.Keep,
-                StencilFunc = ComparisonFunction.Always
-            }
-        };
-        device.CreateDepthStencilState(shadowDepthDesc);
-
-        RasterizerDescription cullNoneDesc = new()
-        {
-            CullMode = CullMode.None,
-            FillMode = FillMode.Solid,
-            FrontCounterClockwise = false,
-            DepthClipEnable = false
-        };
-        _cullNoneState = device.CreateRasterizerState(cullNoneDesc);
-
-        BlendDescription noColorBlendDesc = new();
-        noColorBlendDesc.RenderTarget[0].RenderTargetWriteMask = ColorWriteEnable.None;
-        _noColorWriteBlendState = device.CreateBlendState(noColorBlendDesc);
-
-        DepthStencilDescription lightPassDepthDesc = new()
-        {
-            DepthEnable = false,
-            DepthWriteMask = DepthWriteMask.Zero,
-            DepthFunc = ComparisonFunction.Always,
-            StencilEnable = true,
-            StencilReadMask = 0xFF,
-            StencilWriteMask = 0x00,
-            FrontFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Keep,
-                StencilPassOp = StencilOperation.Keep,
-                StencilFunc = ComparisonFunction.Equal
-            },
-            BackFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Keep,
-                StencilPassOp = StencilOperation.Keep,
-                StencilFunc = ComparisonFunction.Equal
-            }
-        };
-        _lightPassDepthState = device.CreateDepthStencilState(lightPassDepthDesc);
-
-        DepthStencilDescription mirrorNoDepthWriteDesc = new()
-        {
-            DepthEnable = true,
-            DepthWriteMask = DepthWriteMask.Zero,
-            DepthFunc = ComparisonFunction.LessEqual,
-            StencilEnable = true,
-            StencilReadMask = 0xFF,
-            StencilWriteMask = 0x00,
-            FrontFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Keep,
-                StencilPassOp = StencilOperation.Keep,
-                StencilFunc = ComparisonFunction.Equal
-            },
-            BackFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Keep,
-                StencilPassOp = StencilOperation.Keep,
-                StencilFunc = ComparisonFunction.Equal
-            }
-        };
-        _mirrorNoDepthWriteState = device.CreateDepthStencilState(mirrorNoDepthWriteDesc);
-
         BlendDescription additiveBlendDesc = new();
         additiveBlendDesc.RenderTarget[0] = new RenderTargetBlendDescription
         {
@@ -212,79 +97,20 @@ public sealed class RenderingPipeline : IDisposable
         };
         _alphaBlendState = device.CreateBlendState(alphaBlendDesc);
 
-        DepthStencilDescription mirrorStencilWriteDesc = new()
-        {
-            DepthEnable = true,
-            DepthWriteMask = DepthWriteMask.Zero,
-            DepthFunc = ComparisonFunction.LessEqual,
-            StencilEnable = true,
-            StencilReadMask = 0xFF,
-            StencilWriteMask = 0xFF,
-            FrontFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Keep,
-                StencilPassOp = StencilOperation.Replace,
-                StencilFunc = ComparisonFunction.Always
-            },
-            BackFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Keep,
-                StencilPassOp = StencilOperation.Replace,
-                StencilFunc = ComparisonFunction.Always
-            }
-        };
-        _mirrorStencilWriteState = device.CreateDepthStencilState(mirrorStencilWriteDesc);
-
-        DepthStencilDescription mirrorGPassDepthDesc = new()
-        {
-            DepthEnable = true,
-            DepthWriteMask = DepthWriteMask.All,
-            DepthFunc = ComparisonFunction.LessEqual,
-            StencilEnable = true,
-            StencilReadMask = 0xFF,
-            StencilWriteMask = 0x00,
-            FrontFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Keep,
-                StencilPassOp = StencilOperation.Keep,
-                StencilFunc = ComparisonFunction.Equal
-            },
-            BackFace = new DepthStencilOperationDescription
-            {
-                StencilFailOp = StencilOperation.Keep,
-                StencilDepthFailOp = StencilOperation.Keep,
-                StencilPassOp = StencilOperation.Keep,
-                StencilFunc = ComparisonFunction.Equal
-            }
-        };
-        _mirrorGPassDepthState = device.CreateDepthStencilState(mirrorGPassDepthDesc);
-
         _modelBuffer = new ConstantBuffer<ConstantBufferModel>();
         _colorBuffer = new ConstantBuffer<ConstantBufferSurfaceColor>();
-        _mirrorCamera = new Camera(1.0f);
     }
 
     public void Dispose()
     {
         _modelBuffer?.Dispose();
         _colorBuffer?.Dispose();
-        _mirrorCamera?.Dispose();
         _defaultDepthState?.Dispose();
         _noDepthState?.Dispose();
         _noDepthWriteState?.Dispose();
         _cullBackState?.Dispose();
-        _cullFrontState?.Dispose();
-        _cullNoneState?.Dispose();
-        _noColorWriteBlendState?.Dispose();
-        _lightPassDepthState?.Dispose();
         _additiveBlendState?.Dispose();
         _alphaBlendState?.Dispose();
-        _mirrorStencilWriteState?.Dispose();
-        _mirrorGPassDepthState?.Dispose();
-        _mirrorNoDepthWriteState?.Dispose();
     }
 
     public void Execute(Camera mainCamera)
@@ -293,22 +119,11 @@ public sealed class RenderingPipeline : IDisposable
 
         context.OMSetRenderTargets(GI.Instance.RenderTargetView);
         context.ClearRenderTargetView(GI.Instance.RenderTargetView, new Color4(0.1f, 0.1f, 0.1f));
-        context.ClearDepthStencilView(
-            GI.Instance.DepthStencilView,
-            DepthStencilClearFlags.Stencil,
-            1.0f,
-            0
-        );
+        context.ClearDepthStencilView(GI.Instance.DepthStencilView, DepthStencilClearFlags.Stencil, 1.0f, 0);
+
         _modelBuffer?.Bind();
         _colorBuffer?.Bind(2);
 
-        context.ClearDepthStencilView(
-            GI.Instance.DepthStencilView,
-            DepthStencilClearFlags.Stencil,
-            1.0f,
-            0
-        );
-        mainCamera.UpdateAndBindViewProjBuffer();
         RenderGPass(context, mainCamera);
         RenderLightPass(context, mainCamera);
         ClearQueues();
@@ -392,7 +207,7 @@ public sealed class RenderingPipeline : IDisposable
         context.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
         context.Draw(3, 0);
 
-        context.OMSetDepthStencilState(_lightPassDepthState);
+        context.OMSetDepthStencilState(_noDepthState);
         context.OMSetBlendState(_additiveBlendState);
 
         context.OMSetRenderTargets(GI.Instance.RenderTargetView, GI.Instance.DepthStencilView);

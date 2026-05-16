@@ -3,10 +3,10 @@ using System.Runtime.InteropServices;
 
 namespace Duck.Graphics;
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Explicit, Size = 144)]
 public struct ConstantBufferViewProj
 {
-    public Matrix4x4 View;
-    public Matrix4x4 Projection;
-    public Vector3 Pos;
+    [FieldOffset(0)] public Matrix4x4 View;
+    [FieldOffset(64)] public Matrix4x4 Projection;
+    [FieldOffset(128)] public Vector3 Pos;
 }

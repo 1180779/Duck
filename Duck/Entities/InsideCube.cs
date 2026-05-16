@@ -1,4 +1,5 @@
 ﻿using System.Numerics;
+
 using Duck.Graphics;
 
 namespace Duck.Entities;
@@ -11,7 +12,7 @@ public class InsideCube : Entity
     public Vector4 Color
     {
         get;
-    } = new (0.3f, 0.3f, 0.3f, 1.0f);
+    } = new(0.7f, 0.7f, 0.7f, 1.0f);
     public const float HalfSize = 5.0f;
 
     public InsideCube()

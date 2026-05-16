@@ -3,8 +3,8 @@ using System.Runtime.InteropServices;
 
 namespace Duck.Graphics;
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Explicit, Size = 16)]
 public struct ConstantBufferSurfaceColor
 {
-    public Vector4 SurfaceColor;
+    [FieldOffset(0)] public Vector4 SurfaceColor;
 }

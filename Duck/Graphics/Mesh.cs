@@ -6,21 +6,21 @@ using Vortice.DXGI;
 
 namespace Duck.Graphics;
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Explicit, Size = 24)]
 public struct Vertex(Vector3 position, Vector3 normal)
 {
     public const int Stride = 24;
+    [FieldOffset(12)] public Vector3 Normal = normal;
 
-    public Vector3 Normal = normal;
-    public Vector3 Position = position;
+    [FieldOffset(0)] public Vector3 Position = position;
 }
 
-[StructLayout(LayoutKind.Sequential)]
+[StructLayout(LayoutKind.Explicit, Size = 12)]
 public struct VertexPosition(Vector3 position)
 {
     public const int Stride = 12;
 
-    public Vector3 Position = position;
+    [FieldOffset(0)] public Vector3 Position = position;
 }
 
 public class Mesh : IDisposable
