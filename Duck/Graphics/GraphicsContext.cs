@@ -81,8 +81,12 @@ public sealed class GraphicsContext : IDisposable
 
     public RenderingPipeline Pipeline
     {
-        get;
-    } = new();
+        get
+        {
+            field ??= new RenderingPipeline();
+            return field;
+        }
+    }
 
     public ID3D11RenderTargetView RenderTargetView
     {
@@ -93,13 +97,11 @@ public sealed class GraphicsContext : IDisposable
     public ShaderManager ShaderManager
     {
         get;
-        set;
     } = new();
 
     public IDXGISwapChain SwapChain
     {
         get;
-        init;
     }
 
     public uint Width

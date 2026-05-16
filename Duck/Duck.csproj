@@ -37,12 +37,6 @@
         <EmbeddedResource Include="Shaders\lighting.hlsli" />
         <EmbeddedResource Include="Shaders\lightPassPS.hlsl" />
         <EmbeddedResource Include="Shaders\lightPassVS.hlsl" />
-        <EmbeddedResource Include="Shaders\particle.hlsli" />
-        <EmbeddedResource Include="Shaders\particlePS.hlsl" />
-        <EmbeddedResource Include="Shaders\particleVS.hlsl" />
-        <EmbeddedResource Include="Shaders\shadowVolume.hlsli" />
-        <EmbeddedResource Include="Shaders\shadowVolumeGS.hlsl" />
-        <EmbeddedResource Include="Shaders\shadowVolumeVS.hlsl" />
         <EmbeddedResource Include="Shaders\unlitPS.hlsl" />
         <EmbeddedResource Include="Shaders\unlitVS.hlsl" />
         <EmbeddedResource Include="Shaders\ambientPassPS.hlsl" />

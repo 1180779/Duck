@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Numerics;
+
 using Duck.Graphics;
 
 namespace Duck.Entities.PumaParser;
@@ -83,8 +84,6 @@ public sealed class PumaPart
             indices[t * 3 + 2] = (uint)Triangles[t].VertexIdxIdx3;
         }
 
-        var adjList = AdjacencyHelper.Build(vertices, indices);
-
-        return new Mesh(vertices, indices, adjList);
+        return new Mesh(vertices, indices);
     }
 }

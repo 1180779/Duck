@@ -1,4 +1,7 @@
-﻿#include "constantBuffers.hlsli"
+﻿// #pragma hlsl profile vs_6_6
+// #pragma hlsl entry VS
+
+#include "constantBuffers.hlsli"
 #include "gPass.hlsli"
 
 PS_INPUT VS(VS_INPUT input)
@@ -10,7 +13,6 @@ PS_INPUT VS(VS_INPUT input)
     output.Pos = mul(Projection, mul(View, worldPos));
     output.Norm = normalize(mul(input.Norm, (float3x3) ModelInv));
     output.UV = float2((input.Pos.x + 1.0f) * 0.5f, (1.0f - input.Pos.y) * 0.5f);
-    output.ClipDist = dot(worldPos.xyz, ClipPlane.xyz) + ClipPlane.w;
 
     return output;
 }

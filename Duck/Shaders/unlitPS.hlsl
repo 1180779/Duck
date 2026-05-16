@@ -1,3 +1,6 @@
+// #pragma hlsl profile ps_6_6
+// #pragma hlsl entry PS
+
 #include "constantBuffers.hlsli"
 
 Texture2D    Tex     : register(t0);

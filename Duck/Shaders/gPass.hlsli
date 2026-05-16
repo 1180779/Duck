@@ -1,4 +1,6 @@
-﻿struct VS_INPUT
+﻿// #pragma hlsl profile lib_6_6
+
+struct VS_INPUT
 {
     float3 Pos : POSITION;
     float3 Norm : NORMAL;
@@ -10,7 +12,6 @@ struct PS_INPUT
     float3 Norm : NORMAL;
     float3 WorldPos : POSITION0;
     float2 UV : TEXCOORD0;
-    float ClipDist : SV_ClipDistance0;
 };
 
 struct PS_OUTPUT

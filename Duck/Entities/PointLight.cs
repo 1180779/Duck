@@ -1,4 +1,5 @@
 using System.Numerics;
+
 using Duck.Graphics;
 
 namespace Duck.Entities;
@@ -53,7 +54,7 @@ public sealed class PointLight : Entity
             Position = Position,
             Scale = 0.05f
         };
-        GI.Instance.Pipeline.SubmitOpaque(_mesh, transform.ModelMatrix, transform.InvModelMatrix, Color, castsShadows: false);
+        GI.Instance.Pipeline.SubmitOpaque(_mesh, transform.ModelMatrix, transform.InvModelMatrix, Color);
     }
 
     public void Dispose()

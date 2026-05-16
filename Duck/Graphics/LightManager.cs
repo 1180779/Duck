@@ -2,7 +2,7 @@ using System.Numerics;
 
 namespace Duck.Graphics;
 
-public class LightManager : IDisposable
+public sealed class LightManager : IDisposable
 {
     private ConstantBufferLight.LightArray _positions;
     private ConstantBufferLight.LightArray _colors;
@@ -13,14 +13,17 @@ public class LightManager : IDisposable
 
     public void Clear() => _count = 0;
 
-    public void Add(Vector3 position, Vector4 color)
+    public bool Add(Vector3 position, Vector4 color)
     {
-        if (_count < ConstantBufferLight.MaxLights)
+        if (_count >= ConstantBufferLight.MaxLights)
         {
-            _positions[_count] = new Vector4(position, 1);
-            _colors[_count] = color;
-            _count++;
+            return false;
         }
+
+        _positions[_count] = new Vector4(position, 1);
+        _colors[_count] = color;
+        _count++;
+        return true;
     }
 
     public void Update()

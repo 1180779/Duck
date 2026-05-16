@@ -1,4 +1,7 @@
-﻿#include "lighting.hlsli"
+﻿// #pragma hlsl profile ps_6_6
+// #pragma hlsl entry PS
+
+#include "lighting.hlsli"
 
 Texture2D ColorMap : register(t0);
 Texture2D NormalMap : register(t1);

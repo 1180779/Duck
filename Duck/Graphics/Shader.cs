@@ -8,14 +8,9 @@ using Vortice.Direct3D11;
 
 namespace Duck.Graphics;
 
-public class Shader : IDisposable
+public sealed class Shader : IDisposable
 {
-    public ID3D11VertexShader VertexShader { get; private set; }
-    public ID3D11PixelShader PixelShader { get; private set; }
-    public ID3D11GeometryShader GeometryShader { get; private set; }
-    public ID3D11InputLayout InputLayout { get; private set; }
-
-    public Shader(string vsPath, string? psPath, InputElementDescription[] inputElements, string gsPath = null)
+    public Shader(string vsPath, string? psPath, InputElementDescription[] inputElements, string? gsPath = null)
     {
         ID3D11Device device = GI.Instance.Device;
 
@@ -23,26 +18,29 @@ public class Shader : IDisposable
         int secondLastDot = lastDot > 0 ? vsPath.LastIndexOf('.', lastDot - 1) : -1;
         string resourcePrefix = secondLastDot >= 0 ? vsPath[..(secondLastDot + 1)] : string.Empty;
 
-        using var include = new EmbeddedInclude(resourcePrefix);
+        using EmbeddedInclude include = new(resourcePrefix);
 
         try
         {
-            var vsBlob = Compiler.Compile(Resources.ReadResource(vsPath), [], include, "VS", vsPath, "vs_5_0");
+            ReadOnlyMemory<byte> vsBlob =
+                Compiler.Compile(Resources.ReadResource(vsPath), [], include, "VS", vsPath, "vs_5_0");
             VertexShader = device.CreateVertexShader(vsBlob.Span);
 
             if (!string.IsNullOrEmpty(psPath))
             {
-                var psBlob = Compiler.Compile(Resources.ReadResource(psPath), [], include, "PS", psPath, "ps_5_0");
+                ReadOnlyMemory<byte> psBlob =
+                    Compiler.Compile(Resources.ReadResource(psPath), [], include, "PS", psPath, "ps_5_0");
                 PixelShader = device.CreatePixelShader(psBlob.Span);
             }
 
             if (!string.IsNullOrEmpty(gsPath))
             {
-                var gsBlob = Compiler.Compile(Resources.ReadResource(gsPath), [], include, "GS", gsPath, "gs_5_0");
+                ReadOnlyMemory<byte> gsBlob =
+                    Compiler.Compile(Resources.ReadResource(gsPath), [], include, "GS", gsPath, "gs_5_0");
                 GeometryShader = device.CreateGeometryShader(gsBlob.Span);
             }
 
-            if (inputElements != null && inputElements.Length > 0)
+            if (inputElements is { Length: > 0 })
             {
                 InputLayout = device.CreateInputLayout(inputElements, vsBlob.Span);
             }
@@ -53,26 +51,37 @@ public class Shader : IDisposable
         }
     }
 
-    private sealed class EmbeddedInclude : CallbackBase, Include
+    public ID3D11GeometryShader? GeometryShader
     {
-        private readonly string _prefix;
+        get;
+    }
 
-        public EmbeddedInclude(string prefix)
-        {
-            _prefix = prefix;
-        }
+    public ID3D11InputLayout? InputLayout
+    {
+        get;
+    }
 
-        public Stream Open(IncludeType type, string fileName, Stream? parentStream)
-        {
-            return new MemoryStream(Encoding.UTF8.GetBytes(Resources.ReadResource(_prefix + fileName)));
-        }
+    public ID3D11PixelShader? PixelShader
+    {
+        get;
+    }
 
-        public void Close(Stream stream) => stream.Dispose();
+    public ID3D11VertexShader VertexShader
+    {
+        get;
+    }
+
+    public void Dispose()
+    {
+        VertexShader.Dispose();
+        PixelShader?.Dispose();
+        GeometryShader?.Dispose();
+        InputLayout?.Dispose();
     }
 
     public void Use()
     {
-        var context = GI.Instance.Context;
+        ID3D11DeviceContext context = GI.Instance.Context;
 
         context.IASetInputLayout(InputLayout);
         context.VSSetShader(VertexShader);
@@ -80,11 +89,16 @@ public class Shader : IDisposable
         context.GSSetShader(GeometryShader);
     }
 
-    public void Dispose()
+    private sealed class EmbeddedInclude(string prefix) : CallbackBase, Include
     {
-        VertexShader?.Dispose();
-        PixelShader?.Dispose();
-        GeometryShader?.Dispose();
-        InputLayout?.Dispose();
+        public Stream Open(IncludeType type, string fileName, Stream? parentStream)
+        {
+            return new MemoryStream(Encoding.UTF8.GetBytes(Resources.ReadResource(prefix + fileName)));
+        }
+
+        public void Close(Stream stream)
+        {
+            stream.Dispose();
+        }
     }
 }

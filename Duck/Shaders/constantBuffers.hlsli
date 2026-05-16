@@ -1,3 +1,4 @@
+// #pragma hlsl profile lib_6_6
 
 cbuffer ConstantBuffer : register(b0)
 {

@@ -1,4 +1,7 @@
-﻿struct PS_INPUT
+﻿// #pragma hlsl profile vs_6_6
+// #pragma hlsl entry VS
+
+struct PS_INPUT
 {
     float4 Pos : SV_POSITION;
     float2 TexCoord : TEXCOORD0;

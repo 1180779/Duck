@@ -1,4 +1,6 @@
-﻿#define NLIGHTS 2
+﻿// #pragma hlsl profile lib_6_6
+
+#define NLIGHTS 2
 
 cbuffer LightBuffer : register(b3)
 {

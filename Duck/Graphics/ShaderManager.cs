@@ -31,7 +31,5 @@ public sealed class ShaderManager : IDisposable
         GPass,
         LightPass,
         AmbientPass,
-        ShadowVolume,
-        Particle
     }
 }

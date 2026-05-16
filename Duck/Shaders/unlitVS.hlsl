@@ -1,3 +1,6 @@
+// #pragma hlsl profile vs_6_6
+// #pragma hlsl entry VS
+
 #include "constantBuffers.hlsli"
 
 struct VS_INPUT
@@ -11,7 +14,6 @@ struct PS_INPUT
     float4 Pos      : SV_POSITION;
     float3 Norm     : NORMAL;
     float2 UV       : TEXCOORD0;
-    float  ClipDist : SV_ClipDistance0;
 };
 
 PS_INPUT VS(VS_INPUT input)
@@ -24,7 +26,6 @@ PS_INPUT VS(VS_INPUT input)
 
     output.Norm = mul(input.Norm, (float3x3) ModelInv);
     output.UV = float2((input.Pos.x + 1.0f) * 0.5f, (1.0f - input.Pos.y) * 0.5f);
-    output.ClipDist = dot(worldPos.xyz, ClipPlane.xyz) + ClipPlane.w;
 
     return output;
 }

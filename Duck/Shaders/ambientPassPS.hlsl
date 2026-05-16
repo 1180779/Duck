@@ -1,4 +1,7 @@
-﻿Texture2D ColorMap : register(t0);
+﻿// #pragma hlsl profile ps_6_6
+// #pragma hlsl entry PS
+
+Texture2D ColorMap : register(t0);
 SamplerState Sampler : register(s0);
 
 struct PS_INPUT

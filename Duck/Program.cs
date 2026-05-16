@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Numerics;
 
 using Duck.Entities;
@@ -80,76 +81,34 @@ internal static class Program
         {
             GI.Instance.Resize((uint)size.X, (uint)size.Y);
         };
-        GI.Instance.Pipeline.Init();
 
-        InputElementDescription[] positionNormalInputElements = new[]
-        {
-            new InputElementDescription("POSITION", 0, Format.R32G32B32_Float, 0, 0),
-            new InputElementDescription("NORMAL", 0, Format.R32G32B32_Float, 12, 0)
-        };
+        InputElementDescription[] positionNormalInputElements =
+        [
+            new("POSITION", 0, Format.R32G32B32_Float, 0, 0),
+            new("NORMAL", 0, Format.R32G32B32_Float, 12, 0)
+        ];
 
         Shader unlitShader = new($"{GI.ShadersBasePath}unlitVS.hlsl", $"{GI.ShadersBasePath}unlitPS.hlsl",
             positionNormalInputElements
         );
-
         Shader phongShader = new($"{GI.ShadersBasePath}blinnPhongVS.hlsl",
             $"{GI.ShadersBasePath}blinnPhongPS.hlsl", positionNormalInputElements
         );
-
         Shader gpassShader = new($"{GI.ShadersBasePath}gPassVS.hlsl",
             $"{GI.ShadersBasePath}gPassPS.hlsl", positionNormalInputElements
         );
-
         Shader lightPassShader = new($"{GI.ShadersBasePath}lightPassVS.hlsl",
             $"{GI.ShadersBasePath}lightPassPS.hlsl", []
         );
-
         Shader ambientPassShader = new($"{GI.ShadersBasePath}lightPassVS.hlsl",
             $"{GI.ShadersBasePath}ambientPassPS.hlsl", []
-        );
-
-        Shader shadowVolumeShader = new(
-            $"{GI.ShadersBasePath}shadowVolumeVS.hlsl",
-            $"{GI.ShadersBasePath}unlitPS.hlsl",
-            positionNormalInputElements,
-            $"{GI.ShadersBasePath}shadowVolumeGS.hlsl"
-        );
-
-        InputElementDescription[] particleInputElements = new[]
-        {
-            new InputElementDescription("POSITION", 0, Format.R32G32B32_Float, 0, 0,
-                InputClassification.PerVertexData, 0
-            ),
-            new InputElementDescription("INSTANCE_CURRPOS", 0, Format.R32G32B32_Float, 0, 1,
-                InputClassification.PerInstanceData, 1
-            ),
-            new InputElementDescription("INSTANCE_AGE", 0, Format.R32_Float, 12, 1,
-                InputClassification.PerInstanceData, 1
-            ),
-            new InputElementDescription("INSTANCE_PREVPOS", 0, Format.R32G32B32_Float, 16, 1,
-                InputClassification.PerInstanceData, 1
-            ),
-            new InputElementDescription("INSTANCE_MAXAGE", 0, Format.R32_Float, 28, 1,
-                InputClassification.PerInstanceData, 1
-            ),
-            new InputElementDescription("INSTANCE_TEXTURE", 0, Format.R32_Float, 32, 1,
-                InputClassification.PerInstanceData, 1
-            )
-        };
-
-        Shader particleShader = new(
-            $"{GI.ShadersBasePath}particleVS.hlsl",
-            $"{GI.ShadersBasePath}particlePS.hlsl",
-            particleInputElements
         );
 
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Unlit, unlitShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.BlinnPhong, phongShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.GPass, gpassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.LightPass, lightPassShader);
-        GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.ShadowVolume, shadowVolumeShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.AmbientPass, ambientPassShader);
-        GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Particle, particleShader);
 
         ReflectiveQuad myQuad = new()
         {
@@ -166,7 +125,11 @@ internal static class Program
             new Vector3(-3.0f, -2.5f, 1.5f),
             new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
         );
-        GI.Instance.LightManager.Add(pointLight.Position, pointLight.Color);
+        if (!GI.Instance.LightManager.Add(pointLight.Position, pointLight.Color))
+        {
+            throw new UnreachableException("Point light was not added");
+        }
+
         GI.Instance.LightManager.Update();
         GameObjects.Add(pointLight);
 

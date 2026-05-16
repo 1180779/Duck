@@ -1,101 +1,91 @@
 ﻿using System.Numerics;
 using System.Runtime.InteropServices;
+
 using Vortice.Direct3D11;
+using Vortice.DXGI;
 
 namespace Duck.Graphics;
 
 [StructLayout(LayoutKind.Sequential)]
-public struct Vertex
+public struct Vertex(Vector3 position, Vector3 normal)
 {
-    public Vector3 Position;
-    public Vector3 Normal;
+    public const int Stride = 24;
 
-    public Vertex(Vector3 position, Vector3 normal)
-    {
-        Position = position;
-        Normal = normal;
-    }
+    public Vector3 Normal = normal;
+    public Vector3 Position = position;
 }
 
 [StructLayout(LayoutKind.Sequential)]
-public struct VertexPosition
+public struct VertexPosition(Vector3 position)
 {
-    public Vector3 Position;
+    public const int Stride = 12;
 
-    public VertexPosition(Vector3 position)
-    {
-        Position = position;
-    }
+    public Vector3 Position = position;
 }
 
 public class Mesh : IDisposable
 {
-    public ID3D11Buffer VertexBuffer { get; private set; }
-    public ID3D11Buffer IndexBuffer { get; private set; }
-    public ID3D11Buffer? AdjacencyIndexBuffer { get; private set; }
-
-    public int IndexCount { get; private set; }
-    public int AdjacencyIndexCount { get; }
+    /// <summary>
+    ///     Vertex buffer stride
+    /// </summary>
     public readonly uint Stride;
-    public Mesh(Vertex[] vertices, uint[] indices, uint[]? adjacencyIndices = null)
+
+    public Mesh(Vertex[] vertices, uint[] indices)
     {
-        var device = GI.Instance.Device;
+        ID3D11Device device = GI.Instance.Device;
 
         VertexBuffer = device.CreateBuffer(vertices, BindFlags.VertexBuffer);
         IndexBuffer = device.CreateBuffer(indices, BindFlags.IndexBuffer);
         IndexCount = indices.Length;
 
-        if (adjacencyIndices != null && adjacencyIndices.Length > 0)
-        {
-            AdjacencyIndexBuffer = device.CreateBuffer(adjacencyIndices, BindFlags.IndexBuffer);
-            AdjacencyIndexCount = adjacencyIndices.Length;
-        }
-
-        Stride = 24;
+        Stride = Vertex.Stride;
     }
-    public Mesh(VertexPosition[] vertices, uint[] indices, uint[]? adjacencyIndices = null)
+
+    public Mesh(VertexPosition[] vertices, uint[] indices)
     {
-        var device = GI.Instance.Device;
+        ID3D11Device device = GI.Instance.Device;
 
         VertexBuffer = device.CreateBuffer(vertices, BindFlags.VertexBuffer);
         IndexBuffer = device.CreateBuffer(indices, BindFlags.IndexBuffer);
         IndexCount = indices.Length;
 
-        if (adjacencyIndices != null && adjacencyIndices.Length > 0)
-        {
-            AdjacencyIndexBuffer = device.CreateBuffer(adjacencyIndices, BindFlags.IndexBuffer);
-            AdjacencyIndexCount = adjacencyIndices.Length;
-        }
-
-        Stride = 12;
+        Stride = VertexPosition.Stride;
     }
 
-    public void Bind(bool useAdjacency = false)
+    public ID3D11Buffer IndexBuffer
     {
-        var context = GI.Instance.Context;
-
-        context.IASetVertexBuffer(0, VertexBuffer, Stride, 0);
-
-        if (useAdjacency && AdjacencyIndexBuffer != null)
-        {
-            context.IASetIndexBuffer(AdjacencyIndexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
-        }
-        else
-        {
-            context.IASetIndexBuffer(IndexBuffer, Vortice.DXGI.Format.R32_UInt, 0);
-        }
+        get;
     }
 
-    public void Unbind()
+    public int IndexCount
     {
-        var context = GI.Instance.Context;
-        context.IASetVertexBuffer(0, null, 0, 0);
-        context.IASetIndexBuffer(null, Vortice.DXGI.Format.Unknown, 0);
+        get;
+        private set;
+    }
+
+    public ID3D11Buffer VertexBuffer
+    {
+        get;
     }
 
     public void Dispose()
     {
-        VertexBuffer?.Dispose();
-        IndexBuffer?.Dispose();
+        VertexBuffer.Dispose();
+        IndexBuffer.Dispose();
+    }
+
+    public void Bind()
+    {
+        ID3D11DeviceContext context = GI.Instance.Context;
+
+        context.IASetVertexBuffer(0, VertexBuffer, Stride);
+        context.IASetIndexBuffer(IndexBuffer, Format.R32_UInt, 0);
+    }
+
+    public void Unbind()
+    {
+        ID3D11DeviceContext context = GI.Instance.Context;
+        context.IASetVertexBuffer(0, null!, 0);
+        context.IASetIndexBuffer(null, Format.Unknown, 0);
     }
 }
