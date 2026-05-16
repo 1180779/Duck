@@ -29,7 +29,7 @@ internal static class Program
         GlfwWindowing.Use();
         options.API = GraphicsAPI.None;
         options.Size = new Vector2D<int>(1280, 720);
-        options.Title = "GK2PUMA";
+        options.Title = "Duck";
 
         s_window = Window.Create(options);
 
@@ -110,7 +110,7 @@ internal static class Program
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.LightPass, lightPassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.AmbientPass, ambientPassShader);
 
-        ReflectiveQuad myQuad = new()
+        Quad myQuad = new()
         {
             Transform =
             {

@@ -14,14 +14,14 @@ public static class Descriptions
             StencilEnable = false,
             StencilReadMask = 0xFF,
             StencilWriteMask = 0xFF,
-            FrontFace = new()
+            FrontFace = new DepthStencilOperationDescription
             {
                 StencilFunc = ComparisonFunction.Always,
                 StencilDepthFailOp = StencilOperation.Keep,
                 StencilPassOp = StencilOperation.Keep,
                 StencilFailOp = StencilOperation.Keep
             },
-            BackFace = new()
+            BackFace = new DepthStencilOperationDescription
             {
                 StencilFunc = ComparisonFunction.Always,
                 StencilDepthFailOp = StencilOperation.Keep,
