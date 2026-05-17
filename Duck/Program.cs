@@ -111,15 +111,13 @@ internal static class Program
         {
             Transform =
             {
-                Position = new Vector3(0, -InsideCube.HalfSize + 1f, 2.5f),
-                Rotation = new Vector3(30.0f * MathF.PI / 180, 0.0f, 0),
-                Scale = 1.0f
+                Position = new Vector3(0, 0, 0), Rotation = new Vector3(MathF.PI / 2, 0, 0), Scale = 10.0f
             }
         };
         GameObjects.Add(myQuad);
 
         PointLight pointLight = new(
-            new Vector3(0.0f, 0.0f, 0.0f),
+            new Vector3(0.0f, 2.5f, 0.0f),
             new Vector4(1.0f, 1.0f, 1.0f, 1.0f)
         );
         if (!GI.Instance.LightManager.Add(pointLight.Position, pointLight.Color))
