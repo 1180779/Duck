@@ -1,5 +1,7 @@
 ﻿using System.Numerics;
+
 using Duck.Graphics;
+
 using Silk.NET.Input;
 
 namespace Duck.Entities;
@@ -175,6 +177,13 @@ public class Camera : Entity, IDisposable
             ProjectionMatrix = Matrix4x4.CreatePerspectiveFieldOfViewLeftHanded(_fovY, _aspectRatio, _nearPlane, _farPlane);
             _projectionDirty = false;
         }
+    }
+
+    public void LookAt(Vector3 target)
+    {
+        Vector3 dir = Vector3.Normalize(target - Position);
+        Pitch = MathF.Asin(dir.Y);
+        Yaw = MathF.Atan2(dir.Z, dir.X);
     }
 
     public void Dispose() => _viewProjBuffer.Dispose();

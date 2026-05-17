@@ -75,6 +75,8 @@ internal static class Program
 
         GI.CreateInstance(hwnd, width, height);
         s_camera = new Camera((float)width / height);
+        s_camera.Position = new Vector3(15.0f);
+        s_camera.LookAt(new Vector3());
 
         GI.Instance.Resize(width, height);
         s_window.Resize += size =>
@@ -107,7 +109,7 @@ internal static class Program
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.LightPass, lightPassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.AmbientPass, ambientPassShader);
 
-        Quad myQuad = new()
+        WaterQuad myQuad = new()
         {
             Transform =
             {

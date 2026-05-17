@@ -1,5 +1,8 @@
 using System.Diagnostics;
 using System.Numerics;
+using System.Runtime.CompilerServices;
+
+using SharpGen.Runtime;
 
 using Vortice.Direct3D11;
 using Vortice.DXGI;
@@ -10,20 +13,34 @@ public sealed class WaterQuad : Quad
 {
     public WaterQuad()
     {
+        H = 2.0f / (N - 1.0f);
+        Dt = 1 / (float)N;
         A = C * C / H / H * Dt * Dt;
         B = 2 - (4 * A);
         Z = new float[N, N];
-        Zold = new float[N, N];
+        ZOld = new float[N, N];
         D = new float[N, N];
-        H = 2.0f / (N - 1.0f);
-        Dt = 1 / (float)N;
         Width = N - 2;
         Height = N - 2;
         NormalTexture = CreateNormalTexture();
 
         InitDij();
+        TestNormalsPerturbations();
     }
 
+    private void TestNormalsPerturbations()
+    {
+        int cx = (int)N / 2, cy = (int)N / 2;
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                float dx = i - cx, dy = j - cy;
+                Z[i, j] = MathF.Exp(-((dx * dx) + (dy * dy)) / 10.0f);
+            }
+        }
+    }
+    
     public float A
     {
         get;
@@ -80,7 +97,7 @@ public sealed class WaterQuad : Quad
         set;
     }
 
-    private float[,] Zold
+    private float[,] ZOld
     {
         get;
         set;
@@ -99,6 +116,7 @@ public sealed class WaterQuad : Quad
         UpdateNormalTexture();
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private ID3D11ShaderResourceView CreateNormalTexture()
     {
         Texture2DDescription texDesc = new()
@@ -107,14 +125,16 @@ public sealed class WaterQuad : Quad
             Height = Height,
             MipLevels = 1,
             ArraySize = 1,
-            Format = Format.R8G8B8A8_UInt,
+            Format = Format.R8G8B8A8_UNorm,
             SampleDescription = new SampleDescription(1, 0),
             Usage = ResourceUsage.Dynamic,
-            BindFlags = BindFlags.ShaderResource
+            BindFlags = BindFlags.ShaderResource,
+            CPUAccessFlags = CpuAccessFlags.Write
         };
         byte[] blue = [128, 128, 255, 255];
-        byte[] texture = Enumerable.Repeat(blue, (int)(N * N)).SelectMany(arr => arr).ToArray();
-        uint rowPitch = 4 * N;
+        uint size = N - 2;
+        byte[] texture = Enumerable.Repeat(blue, (int)(size * size)).SelectMany(arr => arr).ToArray();
+        uint rowPitch = 4 * size;
         ID3D11ShaderResourceView normTexture;
         unsafe
         {
@@ -129,6 +149,7 @@ public sealed class WaterQuad : Quad
         return normTexture;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private float Dij(int i, int j)
     {
         float di = Transform.AxisScale.X / N * i;
@@ -136,6 +157,7 @@ public sealed class WaterQuad : Quad
         return Dij(di, dij);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private float Dij(float di, float dj)
     {
         di = MathF.Min(Transform.AxisScale.X - di, di);
@@ -146,6 +168,7 @@ public sealed class WaterQuad : Quad
 
     private void InitDij()
     {
+        Debug.Assert(D.GetLength(0) == N && D.GetLength(1) == N);
         for (int i = 0; i < N; i++)
         {
             for (int j = 0; j < N; j++)
@@ -155,8 +178,11 @@ public sealed class WaterQuad : Quad
         }
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private byte[] NormalsFromHeightMap()
     {
+        Debug.Assert(Z.GetLength(0) == N && Z.GetLength(1) == N);
+        
         uint size = N - 2;
         byte[] result = new byte[size * size * 4];
         float di = Transform.AxisScale.X / N;
@@ -183,23 +209,31 @@ public sealed class WaterQuad : Quad
         return result;
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void UpdateHeights()
     {
+        Debug.Assert(ZOld.GetLength(0) == N && ZOld.GetLength(1) == N);
         for (int i = 0; i < N; i++)
         {
             for (int j = 0; j < N; j++)
             {
-                Zold[i, j] = Znp1(i, j);
+                ZOld[i, j] = Znp1(i, j);
             }
         }
 
-        (Z, Zold) = (Zold, Z);
+        (Z, ZOld) = (ZOld, Z);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private void UpdateNormalTexture()
     {
-        ID3D11Texture2D? texture = (ID3D11Texture2D)NormalTexture.Resource;
-        GI.Instance.Context.Map(texture, 0, MapMode.WriteDiscard, 0, out MappedSubresource mapped);
+        using ID3D11Texture2D texture = NormalTexture.Resource.QueryInterface<ID3D11Texture2D>();
+        Result result = GI.Instance.Context.Map(texture, 0, MapMode.WriteDiscard, 0, out MappedSubresource mapped);
+        if (result.Failure || mapped.DataPointer == 0)
+        {
+            throw new UnreachableException();
+        }
+
         byte[] normals = NormalsFromHeightMap();
         unsafe
         {
@@ -218,18 +252,19 @@ public sealed class WaterQuad : Quad
         GI.Instance.Context.Unmap(texture, 0);
     }
 
+    [MethodImpl(MethodImplOptions.AggressiveInlining)]
     private float Znp1(int i, int j)
     {
         Debug.Assert(i >= 0 && j >= 0 && i < N && j < N);
         Debug.Assert(D.GetLength(0) == N && D.GetLength(1) == N);
         Debug.Assert(Z.GetLength(0) == N && Z.GetLength(1) == N);
-        Debug.Assert(Zold.GetLength(0) == N && Zold.GetLength(1) == N);
+        Debug.Assert(ZOld.GetLength(0) == N && ZOld.GetLength(1) == N);
 
         float zij = Z[i, j];
         float zim1J = i > 0 ? Z[i - 1, j] : 0.0f;
         float zijm1 = j > 0 ? Z[i, j - 1] : 0.0f;
         float zip1J = i < N - 1 ? Z[i + 1, j] : 0.0f;
         float zijp1 = j < N - 1 ? Z[i, j + 1] : 0.0f;
-        return D[i, j] * ((A * (zip1J + zim1J + zijm1 + zijp1)) + (B * zij) - Zold[i, j]);
+        return D[i, j] * ((A * (zip1J + zim1J + zijm1 + zijp1)) + (B * zij) - ZOld[i, j]);
     }
 }
