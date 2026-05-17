@@ -19,35 +19,30 @@ public class InsideCube : Entity
     {
         var vertices = new Vertex[]
         {
-            new (new (-5, -5,  5), new (0, 0, -1)),
-            new (new (-5,  5,  5), new (0, 0, -1)),
-            new (new ( 5,  5,  5), new (0, 0, -1)),
-            new (new ( 5, -5,  5), new (0, 0, -1)),
-
-            new (new (-5, -5, -5), new (0, 0, 1)),
-            new (new ( 5, -5, -5), new (0, 0, 1)),
-            new (new ( 5,  5, -5), new (0, 0, 1)),
-            new (new (-5,  5, -5), new (0, 0, 1)),
-
-            new (new (-5, -5, -5), new (1, 0, 0)),
-            new (new (-5,  5, -5), new (1, 0, 0)),
-            new (new (-5,  5,  5), new (1, 0, 0)),
-            new (new (-5, -5,  5), new (1, 0, 0)),
-
-            new (new ( 5, -5, -5), new (-1, 0, 0)),
-            new (new ( 5, -5,  5), new (-1, 0, 0)),
-            new (new ( 5,  5,  5), new (-1, 0, 0)),
-            new (new ( 5,  5, -5), new (-1, 0, 0)),
-
-            new (new (-5,  5, -5), new (0, -1, 0)),
-            new (new ( 5,  5, -5), new (0, -1, 0)),
-            new (new ( 5,  5,  5), new (0, -1, 0)),
-            new (new (-5,  5,  5), new (0, -1, 0)),
-
-            new (new (-5, -5, -5), new (0, 1, 0)),
-            new (new (-5, -5,  5), new (0, 1, 0)),
-            new (new ( 5, -5,  5), new (0, 1, 0)),
-            new (new ( 5, -5, -5), new (0, 1, 0))
+            new(new Vector3(-5, -5, 5), new Vector3(0, 0, -1), new Vector2(0, 1)),
+            new(new Vector3(-5, 5, 5), new Vector3(0, 0, -1), new Vector2(0, 0)),
+            new(new Vector3(5, 5, 5), new Vector3(0, 0, -1), new Vector2(1, 0)),
+            new(new Vector3(5, -5, 5), new Vector3(0, 0, -1), new Vector2(1, 1)),
+            new(new Vector3(-5, -5, -5), new Vector3(0, 0, 1), new Vector2(1, 1)),
+            new(new Vector3(5, -5, -5), new Vector3(0, 0, 1), new Vector2(0, 1)),
+            new(new Vector3(5, 5, -5), new Vector3(0, 0, 1), new Vector2(0, 0)),
+            new(new Vector3(-5, 5, -5), new Vector3(0, 0, 1), new Vector2(1, 0)),
+            new(new Vector3(-5, -5, -5), new Vector3(1, 0, 0), new Vector2(0, 1)),
+            new(new Vector3(-5, 5, -5), new Vector3(1, 0, 0), new Vector2(0, 0)),
+            new(new Vector3(-5, 5, 5), new Vector3(1, 0, 0), new Vector2(1, 0)),
+            new(new Vector3(-5, -5, 5), new Vector3(1, 0, 0), new Vector2(1, 1)),
+            new(new Vector3(5, -5, -5), new Vector3(-1, 0, 0), new Vector2(1, 1)),
+            new(new Vector3(5, -5, 5), new Vector3(-1, 0, 0), new Vector2(0, 1)),
+            new(new Vector3(5, 5, 5), new Vector3(-1, 0, 0), new Vector2(0, 0)),
+            new(new Vector3(5, 5, -5), new Vector3(-1, 0, 0), new Vector2(1, 0)),
+            new(new Vector3(-5, 5, -5), new Vector3(0, -1, 0), new Vector2(0, 0)),
+            new(new Vector3(5, 5, -5), new Vector3(0, -1, 0), new Vector2(1, 0)),
+            new(new Vector3(5, 5, 5), new Vector3(0, -1, 0), new Vector2(1, 1)),
+            new(new Vector3(-5, 5, 5), new Vector3(0, -1, 0), new Vector2(0, 1)),
+            new(new Vector3(-5, -5, -5), new Vector3(0, 1, 0), new Vector2(0, 1)),
+            new(new Vector3(-5, -5, 5), new Vector3(0, 1, 0), new Vector2(0, 0)),
+            new(new Vector3(5, -5, 5), new Vector3(0, 1, 0), new Vector2(1, 0)),
+            new(new Vector3(5, -5, -5), new Vector3(0, 1, 0), new Vector2(1, 1))
         };
 
         var indices = new uint[]

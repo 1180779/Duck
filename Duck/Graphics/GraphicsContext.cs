@@ -17,6 +17,7 @@ public sealed class GraphicsContext : IDisposable
 
     public readonly ID3D11SamplerState DefaultSampler;
     public readonly ID3D11ShaderResourceView DefaultWhiteTextureSRV;
+    public readonly ID3D11ShaderResourceView DefaultNormTexture;
 
     public readonly ID3D11RenderTargetView[] GBufferRTVs = new ID3D11RenderTargetView[3];
     public readonly ID3D11ShaderResourceView[] GBufferSRVs = new ID3D11ShaderResourceView[3];
@@ -30,6 +31,7 @@ public sealed class GraphicsContext : IDisposable
 
         DefaultSampler = Create.SamplerState(Device);
         DefaultWhiteTextureSRV = Create.WhiteTexture(Device);
+        DefaultNormTexture = Create.DefaultNormTexture(Device);
 
         using ID3D11Texture2D backBuffer = SwapChain.GetBuffer<ID3D11Texture2D>(0);
         RenderTargetView = Device.CreateRenderTargetView(backBuffer);
@@ -114,6 +116,7 @@ public sealed class GraphicsContext : IDisposable
     {
         DefaultSampler.Dispose();
         DefaultWhiteTextureSRV.Dispose();
+        DefaultNormTexture.Dispose();
         Context.Dispose();
         DepthStencilView.Dispose();
         Device.Dispose();
@@ -303,6 +306,35 @@ public sealed class GraphicsContext : IDisposable
             }
 
             return whiteTexture;
+        }
+
+        public static ID3D11ShaderResourceView DefaultNormTexture(ID3D11Device device)
+        {
+            Texture2DDescription texDesc = new()
+            {
+                Width = 1,
+                Height = 1,
+                MipLevels = 1,
+                ArraySize = 1,
+                Format = Format.R8G8B8A8_UNorm,
+                SampleDescription = new SampleDescription(1, 0),
+                Usage = ResourceUsage.Immutable,
+                BindFlags = BindFlags.ShaderResource
+            };
+            byte[] blue = [128, 128, 255, 255];
+
+            ID3D11ShaderResourceView defaultNormTexture;
+            unsafe
+            {
+                fixed (byte* p = blue)
+                {
+                    SubresourceData initData = new((nint)p, 4);
+                    using ID3D11Texture2D tex = device.CreateTexture2D(texDesc, [initData]);
+                    defaultNormTexture = device.CreateShaderResourceView(tex);
+                }
+            }
+
+            return defaultNormTexture;
         }
 
         public struct DeviceAndSwapChain

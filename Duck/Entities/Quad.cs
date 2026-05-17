@@ -13,10 +13,14 @@ public class Quad : Entity
     {
         Vertex[] vertices =
         [
-            new(new Vector3(-1, -1, 0), new Vector3(0, 0, -1)), new(new Vector3(-1, 1, 0), new Vector3(0, 0, -1)),
-            new(new Vector3(1, 1, 0), new Vector3(0, 0, -1)), new(new Vector3(1, -1, 0), new Vector3(0, 0, -1)),
-            new(new Vector3(-1, -1, 0), new Vector3(0, 0, 1)), new(new Vector3(-1, 1, 0), new Vector3(0, 0, 1)),
-            new(new Vector3(1, 1, 0), new Vector3(0, 0, 1)), new(new Vector3(1, -1, 0), new Vector3(0, 0, 1))
+            new(new Vector3(-1, -1, 0), new Vector3(0, 0, -1), new Vector2(0, 1)),
+            new(new Vector3(-1, 1, 0), new Vector3(0, 0, -1), new Vector2(0, 0)),
+            new(new Vector3(1, 1, 0), new Vector3(0, 0, -1), new Vector2(1, 0)),
+            new(new Vector3(1, -1, 0), new Vector3(0, 0, -1), new Vector2(1, 1)),
+            new(new Vector3(-1, -1, 0), new Vector3(0, 0, 1), new Vector2(1, 1)),
+            new(new Vector3(-1, 1, 0), new Vector3(0, 0, 1), new Vector2(1, 0)),
+            new(new Vector3(1, 1, 0), new Vector3(0, 0, 1), new Vector2(0, 0)),
+            new(new Vector3(1, -1, 0), new Vector3(0, 0, 1), new Vector2(0, 1))
         ];
 
         uint[] indices = [0, 1, 2, 0, 2, 3, 4, 6, 5, 4, 7, 6];

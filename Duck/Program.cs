@@ -85,7 +85,8 @@ internal static class Program
         InputElementDescription[] positionNormalInputElements =
         [
             new("POSITION", 0, Format.R32G32B32_Float, 0, 0),
-            new("NORMAL", 0, Format.R32G32B32_Float, 12, 0)
+            new("NORMAL", 0, Format.R32G32B32_Float, 12, 0),
+            new("TEXCOORD", 0, Format.R32G32_Float, 24, 0)
         ];
 
         Shader unlitShader = new($"{GI.ShadersBasePath}unlitVS.hlsl", $"{GI.ShadersBasePath}unlitPS.hlsl",

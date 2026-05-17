@@ -4,6 +4,7 @@ struct VS_INPUT
 {
     float3 Pos : POSITION;
     float3 Norm : NORMAL;
+    float2 UV : TEXCOORD0;
 };
 
 struct PS_INPUT

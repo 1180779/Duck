@@ -6,13 +6,13 @@ using Vortice.DXGI;
 
 namespace Duck.Graphics;
 
-[StructLayout(LayoutKind.Explicit, Size = 24)]
-public struct Vertex(Vector3 position, Vector3 normal)
+[StructLayout(LayoutKind.Explicit, Size = 32)]
+public struct Vertex(Vector3 position, Vector3 normal, Vector2 uv = default)
 {
-    public const int Stride = 24;
-    [FieldOffset(12)] public Vector3 Normal = normal;
-
+    public const int Stride = 32;
     [FieldOffset(0)] public Vector3 Position = position;
+    [FieldOffset(12)] public Vector3 Normal = normal;
+    [FieldOffset(24)] public Vector2 UV = uv;
 }
 
 [StructLayout(LayoutKind.Explicit, Size = 12)]

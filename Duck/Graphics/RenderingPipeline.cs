@@ -12,6 +12,7 @@ public struct OpaqueCommand
 {
     public Matrix4x4 InvTransform;
     public Mesh Mesh;
+    public ID3D11ShaderResourceView? NormTexture;
     public Vector4 SurfaceColor;
     public ID3D11ShaderResourceView? Texture;
     public Matrix4x4 Transform;
@@ -130,7 +131,8 @@ public sealed class RenderingPipeline : IDisposable
     }
 
     public void SubmitOpaque(
-        Mesh mesh, Matrix4x4 transform, Matrix4x4 invTransform, Vector4 color, ID3D11ShaderResourceView? texture = null
+        Mesh mesh, Matrix4x4 transform, Matrix4x4 invTransform, Vector4 color, ID3D11ShaderResourceView? texture = null,
+        ID3D11ShaderResourceView? normTexture = null
     )
     {
         _opaques.Add(
@@ -140,7 +142,8 @@ public sealed class RenderingPipeline : IDisposable
                 Transform = transform,
                 InvTransform = invTransform,
                 SurfaceColor = color,
-                Texture = texture
+                Texture = texture,
+                NormTexture = normTexture
             }
         );
     }
@@ -171,6 +174,7 @@ public sealed class RenderingPipeline : IDisposable
             _colorBuffer?.Update(new ConstantBufferSurfaceColor { SurfaceColor = cmd.SurfaceColor });
 
             context.PSSetShaderResources(0, [cmd.Texture ?? GI.Instance.DefaultWhiteTextureSRV]);
+            context.PSSetShaderResources(1, [cmd.NormTexture ?? GI.Instance.DefaultNormTexture]);
 
             cmd.Mesh.Bind();
             context.DrawIndexed((uint)cmd.Mesh.IndexCount, 0, 0);
