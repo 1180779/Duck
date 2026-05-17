@@ -91,9 +91,6 @@ internal static class Program
         Shader unlitShader = new($"{GI.ShadersBasePath}unlitVS.hlsl", $"{GI.ShadersBasePath}unlitPS.hlsl",
             positionNormalInputElements
         );
-        Shader phongShader = new($"{GI.ShadersBasePath}blinnPhongVS.hlsl",
-            $"{GI.ShadersBasePath}blinnPhongPS.hlsl", positionNormalInputElements
-        );
         Shader gpassShader = new($"{GI.ShadersBasePath}gPassVS.hlsl",
             $"{GI.ShadersBasePath}gPassPS.hlsl", positionNormalInputElements
         );
@@ -105,7 +102,6 @@ internal static class Program
         );
 
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Unlit, unlitShader);
-        GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.BlinnPhong, phongShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.GPass, gpassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.LightPass, lightPassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.AmbientPass, ambientPassShader);

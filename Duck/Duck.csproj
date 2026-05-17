@@ -28,9 +28,6 @@
 
     <ItemGroup>
         <EmbeddedResource Include="Shaders\constantBuffers.hlsli" />
-        <EmbeddedResource Include="Shaders\blinnPhong.hlsli" />
-        <EmbeddedResource Include="Shaders\blinnPhongPS.hlsl" />
-        <EmbeddedResource Include="Shaders\blinnPhongVS.hlsl" />
         <EmbeddedResource Include="Shaders\gPass.hlsli" />
         <EmbeddedResource Include="Shaders\gPassPS.hlsl" />
         <EmbeddedResource Include="Shaders\gPassVS.hlsl" />

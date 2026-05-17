@@ -27,7 +27,6 @@ public sealed class ShaderManager : IDisposable
     public enum ShaderType
     {
         Unlit,
-        BlinnPhong,
         GPass,
         LightPass,
         AmbientPass,
