@@ -10,52 +10,55 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <None Remove="Shaders\gPass.hlsli" />
-        <None Remove="Shaders\gPassPS.hlsl" />
-        <None Remove="Shaders\lighting.hlsli" />
-        <None Remove="Shaders\lightPassPS.hlsl" />
-        <None Remove="Shaders\lightPassVS.hlsl" />
-        <None Remove="Shaders\particle.hlsli" />
-        <None Remove="Shaders\particlePS.hlsl" />
-        <None Remove="Shaders\particleVS.hlsl" />
-        <None Remove="Shaders\shadowVolume.hlsli" />
-        <None Remove="Shaders\shadowVolumeGS.hlsl" />
-        <None Remove="Shaders\shadowVolumeVS.hlsl" />
-        <None Remove="Shaders\tex.png" />
-        <None Remove="Shaders\unlitPS.hlsl" />
-        <None Remove="Shaders\unlitVS.hlsl" />
+        <None Remove="Shaders\gPass.hlsli"/>
+        <None Remove="Shaders\gPassPS.hlsl"/>
+        <None Remove="Shaders\lighting.hlsli"/>
+        <None Remove="Shaders\lightPassPS.hlsl"/>
+        <None Remove="Shaders\lightPassVS.hlsl"/>
+        <None Remove="Shaders\particle.hlsli"/>
+        <None Remove="Shaders\particlePS.hlsl"/>
+        <None Remove="Shaders\particleVS.hlsl"/>
+        <None Remove="Shaders\shadowVolume.hlsli"/>
+        <None Remove="Shaders\shadowVolumeGS.hlsl"/>
+        <None Remove="Shaders\shadowVolumeVS.hlsl"/>
+        <None Remove="Shaders\tex.png"/>
+        <None Remove="Shaders\unlitPS.hlsl"/>
+        <None Remove="Shaders\unlitVS.hlsl"/>
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Shaders\constantBuffers.hlsli" />
-        <EmbeddedResource Include="Shaders\gPass.hlsli" />
-        <EmbeddedResource Include="Shaders\gPassPS.hlsl" />
-        <EmbeddedResource Include="Shaders\gPassVS.hlsl" />
-        <EmbeddedResource Include="Shaders\lighting.hlsli" />
-        <EmbeddedResource Include="Shaders\lightPassPS.hlsl" />
-        <EmbeddedResource Include="Shaders\lightPassVS.hlsl" />
-        <EmbeddedResource Include="Shaders\unlitPS.hlsl" />
-        <EmbeddedResource Include="Shaders\unlitVS.hlsl" />
-        <EmbeddedResource Include="Shaders\ambientPassPS.hlsl" />
+        <EmbeddedResource Include="Shaders\constantBuffers.hlsli"/>
+        <EmbeddedResource Include="Shaders\env.hlsli"/>
+        <EmbeddedResource Include="Shaders\envPS.hlsl"/>
+        <EmbeddedResource Include="Shaders\envVS.hlsl"/>
+        <EmbeddedResource Include="Shaders\gPass.hlsli"/>
+        <EmbeddedResource Include="Shaders\gPassPS.hlsl"/>
+        <EmbeddedResource Include="Shaders\gPassVS.hlsl"/>
+        <EmbeddedResource Include="Shaders\lighting.hlsli"/>
+        <EmbeddedResource Include="Shaders\lightPassPS.hlsl"/>
+        <EmbeddedResource Include="Shaders\lightPassVS.hlsl"/>
+        <EmbeddedResource Include="Shaders\unlitPS.hlsl"/>
+        <EmbeddedResource Include="Shaders\unlitVS.hlsl"/>
+        <EmbeddedResource Include="Shaders\ambientPassPS.hlsl"/>
+        <EmbeddedResource Include="Textures/charolettenbrunn_park_4k.dds"/>
     </ItemGroup>
 
     <ItemGroup>
-        <Content Include="Meshes\**" CopyToOutputDirectory="PreserveNewest" />
-        <Content Include="Textures\**" CopyToOutputDirectory="PreserveNewest" />
+        <Content Include="Meshes\**" CopyToOutputDirectory="PreserveNewest"/>
+        <Content Include="Textures\**" CopyToOutputDirectory="PreserveNewest"/>
     </ItemGroup>
 
     <ItemGroup>
-<!--        <EmbeddedResource Include="Textures\rain2.png" />-->
-<!--        <EmbeddedResource Include="Textures\rain3.png" />-->
+        <ProjectReference Include="..\libs\DDSTextureLoader.NET\sources\DDSTextureLoader.NET.csproj"/>
     </ItemGroup>
-    
+
     <ItemGroup>
-      <PackageReference Include="Silk.NET.Input" Version="2.23.0" />
-      <PackageReference Include="Silk.NET.Windowing" Version="2.23.0" />
-      <PackageReference Include="StbImageSharp" Version="2.30.15" />
-      <PackageReference Include="Vortice.D3DCompiler" Version="3.8.3" />
-      <PackageReference Include="Vortice.Direct3D11" Version="3.8.3" />
-      <PackageReference Include="Vortice.DirectX" Version="3.8.3" />
+        <PackageReference Include="Silk.NET.Input" Version="2.23.0"/>
+        <PackageReference Include="Silk.NET.Windowing" Version="2.23.0"/>
+        <PackageReference Include="StbImageSharp" Version="2.30.15"/>
+        <PackageReference Include="Vortice.D3DCompiler" Version="3.8.3"/>
+        <PackageReference Include="Vortice.Direct3D11" Version="3.8.3"/>
+        <PackageReference Include="Vortice.DirectX" Version="3.8.3"/>
     </ItemGroup>
 
 </Project>

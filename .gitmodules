@@ -1,0 +1,3 @@
+[submodule "libs/DDSTextureLoader.NET"]
+	path = libs/DDSTextureLoader.NET
+	url = https://github.com/1180779/DDSTextureLoader.NET.git

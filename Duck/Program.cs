@@ -84,6 +84,10 @@ internal static class Program
             GI.Instance.Resize((uint)size.X, (uint)size.Y);
         };
 
+        InputElementDescription[] positionInputElements =
+        [
+            new("POSITION", 0, Format.R32G32B32_Float, 0, 0)
+        ];
         InputElementDescription[] positionNormalInputElements =
         [
             new("POSITION", 0, Format.R32G32B32_Float, 0, 0),
@@ -91,23 +95,27 @@ internal static class Program
             new("TEXCOORD", 0, Format.R32G32_Float, 24, 0)
         ];
 
-        Shader unlitShader = new($"{GI.ShadersBasePath}unlitVS.hlsl", $"{GI.ShadersBasePath}unlitPS.hlsl",
+        Shader unlitShader = new($"{GI.ShadersEmbResPath}unlitVS.hlsl", $"{GI.ShadersEmbResPath}unlitPS.hlsl",
             positionNormalInputElements
         );
-        Shader gpassShader = new($"{GI.ShadersBasePath}gPassVS.hlsl",
-            $"{GI.ShadersBasePath}gPassPS.hlsl", positionNormalInputElements
+        Shader gpassShader = new($"{GI.ShadersEmbResPath}gPassVS.hlsl",
+            $"{GI.ShadersEmbResPath}gPassPS.hlsl", positionNormalInputElements
         );
-        Shader lightPassShader = new($"{GI.ShadersBasePath}lightPassVS.hlsl",
-            $"{GI.ShadersBasePath}lightPassPS.hlsl", []
+        Shader lightPassShader = new($"{GI.ShadersEmbResPath}lightPassVS.hlsl",
+            $"{GI.ShadersEmbResPath}lightPassPS.hlsl", []
         );
-        Shader ambientPassShader = new($"{GI.ShadersBasePath}lightPassVS.hlsl",
-            $"{GI.ShadersBasePath}ambientPassPS.hlsl", []
+        Shader ambientPassShader = new($"{GI.ShadersEmbResPath}lightPassVS.hlsl",
+            $"{GI.ShadersEmbResPath}ambientPassPS.hlsl", []
+        );
+        Shader envShader = new($"{GI.ShadersEmbResPath}envVS.hlsl", $"{GI.ShadersEmbResPath}envPS.hlsl",
+            positionInputElements
         );
 
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Unlit, unlitShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.GPass, gpassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.LightPass, lightPassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.AmbientPass, ambientPassShader);
+        GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Env, envShader);
 
         WaterQuad myQuad = new()
         {
@@ -131,7 +139,16 @@ internal static class Program
         GameObjects.Add(pointLight);
 
         GameObjects.Add(s_camera);
-        GameObjects.Add(new InsideCube());
+
+        using Stream stream = Resources.GetResourceStream($"{GI.TextureEmbResPath}charolettenbrunn_park_4k.dds");
+        GameObjects.Add(new InsideCube
+            {
+                CubeTexture =
+                    GI.Instance.LoadCubeTextureFromStream(
+                        stream
+                    )
+            }
+        );
     }
 
     private static void OnRender(double deltaTime)

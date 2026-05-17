@@ -8,6 +8,14 @@ using Vortice.Mathematics;
 
 namespace Duck.Graphics;
 
+public struct EnvCommand
+{
+    public ID3D11ShaderResourceView CubeTexture;
+    public Mesh Mesh;
+    public Vector4 SurfaceColor;
+    public Matrix4x4 Transform;
+}
+
 public struct OpaqueCommand
 {
     public Matrix4x4 InvTransform;
@@ -25,6 +33,7 @@ public sealed class RenderingPipeline : IDisposable
     private readonly ConstantBuffer<ConstantBufferSurfaceColor>? _colorBuffer;
     private readonly ID3D11RasterizerState? _cullBackState;
     private readonly ID3D11DepthStencilState? _defaultDepthState;
+    private readonly List<EnvCommand> _envs = [];
     private readonly ConstantBuffer<ConstantBufferModel>? _modelBuffer;
     private readonly ID3D11DepthStencilState? _noDepthState;
     private readonly ID3D11DepthStencilState? _noDepthWriteState;
@@ -69,6 +78,15 @@ public sealed class RenderingPipeline : IDisposable
             DepthClipEnable = true
         };
         _cullBackState = device.CreateRasterizerState(cullBackDesc);
+
+        RasterizerDescription cullFrontDesc = new()
+        {
+            CullMode = CullMode.Front,
+            FillMode = FillMode.Solid,
+            FrontCounterClockwise = false,
+            DepthClipEnable = true
+        };
+        device.CreateRasterizerState(cullFrontDesc);
 
         BlendDescription additiveBlendDesc = new();
         additiveBlendDesc.RenderTarget[0] = new RenderTargetBlendDescription
@@ -127,7 +145,17 @@ public sealed class RenderingPipeline : IDisposable
 
         RenderGPass(context, mainCamera);
         RenderLightPass(context, mainCamera);
+        RenderEnvs(context, mainCamera);
         ClearQueues();
+    }
+
+    public void SubmitEnv(
+        Mesh mesh, Matrix4x4 transform, Vector4 color, ID3D11ShaderResourceView cubeTexture
+    )
+    {
+        _envs.Add(
+            new EnvCommand { Mesh = mesh, Transform = transform, SurfaceColor = color, CubeTexture = cubeTexture }
+        );
     }
 
     public void SubmitOpaque(
@@ -160,6 +188,7 @@ public sealed class RenderingPipeline : IDisposable
     private void ClearQueues()
     {
         _opaques.Clear();
+        _envs.Clear();
     }
 
     private void DrawOpaqueBatch(ID3D11DeviceContext context, Mesh? excludeMesh = null)
@@ -175,6 +204,30 @@ public sealed class RenderingPipeline : IDisposable
 
             context.PSSetShaderResources(0, [cmd.Texture ?? GI.Instance.DefaultWhiteTextureSRV]);
             context.PSSetShaderResources(1, [cmd.NormTexture ?? GI.Instance.DefaultNormTexture]);
+
+            cmd.Mesh.Bind();
+            context.DrawIndexed((uint)cmd.Mesh.IndexCount, 0, 0);
+        }
+    }
+
+    private void RenderEnvs(ID3D11DeviceContext context, Camera camera)
+    {
+        context.RSSetState(_cullBackState);
+        context.OMSetDepthStencilState(_defaultDepthState);
+        context.OMSetBlendState(null);
+        context.OMSetRenderTargets(GI.Instance.RenderTargetView, GI.Instance.DepthStencilView);
+        context.PSSetSamplers(0, [GI.Instance.DefaultSampler]);
+
+        Shader envShader = GI.Instance.ShaderManager.GetShader(ShaderManager.ShaderType.Env);
+        envShader.Use();
+        context.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
+
+        foreach (EnvCommand cmd in _envs)
+        {
+            _modelBuffer?.Update(new ConstantBufferModel { Model = cmd.Transform });
+            _colorBuffer?.Update(new ConstantBufferSurfaceColor { SurfaceColor = cmd.SurfaceColor });
+
+            context.PSSetShaderResources(0, [cmd.CubeTexture]);
 
             cmd.Mesh.Bind();
             context.DrawIndexed((uint)cmd.Mesh.IndexCount, 0, 0);

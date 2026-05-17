@@ -1,4 +1,6 @@
-﻿using StbImageSharp;
+﻿using DDSTextureLoader.NET;
+
+using StbImageSharp;
 
 using Vortice.Direct3D;
 using Vortice.Direct3D11;
@@ -10,8 +12,9 @@ namespace Duck.Graphics;
 public sealed class GraphicsContext : IDisposable
 {
     public const string ProjectNamespace = "Duck";
-    public const string ShadersBasePath = $"{ProjectNamespace}.Shaders.";
-    public const string TextureBasePath = $"{ProjectNamespace}.Textures.";
+    public const string ShadersEmbResPath = $"{ProjectNamespace}.Shaders.";
+    public const string TextureEmbResPath = $"{ProjectNamespace}.{TextureDir}.";
+    public const string TextureDir = "Textures";
 
     private static GI? s_instance;
 
@@ -131,6 +134,11 @@ public sealed class GraphicsContext : IDisposable
         s_instance ??= new GI(hwnd, width, height);
     }
 
+    public ID3D11ShaderResourceView LoadCubeTextureFromStream(Stream stream)
+    {
+        return DdsTextureLoader.CreateShaderResourceView(Device, stream);
+    }
+    
     public ID3D11ShaderResourceView LoadTextureFromStream(Stream stream)
     {
         ImageResult? image = ImageResult.FromStream(stream, ColorComponents.RedGreenBlueAlpha);

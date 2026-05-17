@@ -28,19 +28,6 @@ public sealed class WaterQuad : Quad
         TestNormalsPerturbations();
     }
 
-    private void TestNormalsPerturbations()
-    {
-        int cx = (int)N / 2, cy = (int)N / 2;
-        for (int i = 0; i < N; i++)
-        {
-            for (int j = 0; j < N; j++)
-            {
-                float dx = i - cx, dy = j - cy;
-                Z[i, j] = MathF.Exp(-((dx * dx) + (dy * dy)) / 10.0f);
-            }
-        }
-    }
-    
     public float A
     {
         get;
@@ -182,7 +169,7 @@ public sealed class WaterQuad : Quad
     private byte[] NormalsFromHeightMap()
     {
         Debug.Assert(Z.GetLength(0) == N && Z.GetLength(1) == N);
-        
+
         uint size = N - 2;
         byte[] result = new byte[size * size * 4];
         float di = Transform.AxisScale.X / N;
@@ -207,6 +194,19 @@ public sealed class WaterQuad : Quad
         }
 
         return result;
+    }
+
+    private void TestNormalsPerturbations()
+    {
+        int cx = (int)N / 2, cy = (int)N / 2;
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = 0; j < N; j++)
+            {
+                float dx = i - cx, dy = j - cy;
+                Z[i, j] = MathF.Exp(-((dx * dx) + (dy * dy)) / 10.0f);
+            }
+        }
     }
 
     [MethodImpl(MethodImplOptions.AggressiveInlining)]
