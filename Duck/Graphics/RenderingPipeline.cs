@@ -334,7 +334,7 @@ public sealed class RenderingPipeline : IDisposable
 
         foreach (WaterCommand cmd in _waters)
         {
-            _modelBuffer?.Update(new ConstantBufferModel { Model = cmd.Transform });
+            _modelBuffer?.Update(new ConstantBufferModel { Model = cmd.Transform, ModelInv = cmd.InvTransform });
             _colorBuffer?.Update(new ConstantBufferSurfaceColor { SurfaceColor = cmd.SurfaceColor });
 
             context.PSSetShaderResources(0, [cmd.Texture ?? GI.Instance.DefaultWhiteTextureSRV]);

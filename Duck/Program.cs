@@ -121,12 +121,19 @@ internal static class Program
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Env, envShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Water, waterShader);
 
+        using Stream waterStream = Resources.GetResourceStream($"{GI.TextureEmbResPath}scuba_suede_diff_4k.jpg");
+        ID3D11ShaderResourceView waterTexture =
+            GI.Instance.LoadTextureFromStream(
+                waterStream
+            );
         WaterQuad myQuad = new()
         {
             Transform =
             {
                 Position = new Vector3(0, 0, 0), Rotation = new Vector3(MathF.PI / 2, 0, 0), Scale = 10.0f
-            }
+            },
+            Texture = waterTexture,
+            Color = new Vector4(1.0f)
         };
         GameObjects.Add(myQuad);
 

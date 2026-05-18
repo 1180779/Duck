@@ -17,6 +17,7 @@ PS_INPUT VS(VS_INPUT input)
     float4 worldPos = mul(Model, float4(input.Pos, 1.0f));
     output.WorldPos = worldPos.xyz;
     output.Pos = mul(Projection, mul(View, worldPos));
+    output.Norm = normalize(mul(float4(input.Norm, 0.0f), ModelInv).xyz);
     output.UV = input.UV;
     return output;
 }

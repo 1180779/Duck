@@ -44,6 +44,7 @@
         <EmbeddedResource Include="Shaders\waterPS.hlsl"/>
         <EmbeddedResource Include="Shaders\waterVS.hlsl"/>
         <EmbeddedResource Include="Textures/charolettenbrunn_park_4k.dds"/>
+        <EmbeddedResource Include="Textures/scuba_suede_diff_4k.jpg"/>
     </ItemGroup>
 
     <ItemGroup>
