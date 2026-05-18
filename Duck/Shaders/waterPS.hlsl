@@ -103,10 +103,9 @@ float4 PS(PS_INPUT input) : SV_TARGET
 
     if (dot(norm, viewVec) < 0)
     {
-        // TODO: sth is fishy here
-//        norm = -norm;
-//        refractionCoeff = 1.0f / refractionCoeff;
-//        n1 = 4.0f / 3.0f; n2 = 1.0f;
+        norm = -norm;
+        refractionCoeff = 1.0f / refractionCoeff;
+        n1 = 4.0f / 3.0f; n2 = 1.0f;
     }
 
     float3 reflected = reflect(-viewVec, norm);

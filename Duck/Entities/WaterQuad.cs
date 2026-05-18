@@ -9,7 +9,7 @@ using Vortice.DXGI;
 
 namespace Duck.Entities;
 
-public sealed class WaterQuad : Quad
+public sealed class WaterQuad : OneSidedQuad
 {
     public WaterQuad()
     {

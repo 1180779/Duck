@@ -43,6 +43,7 @@ public sealed class RenderingPipeline : IDisposable
     private readonly ID3D11BlendState? _alphaBlendState;
     private readonly ConstantBuffer<ConstantBufferSurfaceColor>? _colorBuffer;
     private readonly ID3D11RasterizerState? _cullBackState;
+    private readonly ID3D11RasterizerState? _cullNoneState;
     private readonly ID3D11DepthStencilState? _defaultDepthState;
     private readonly List<EnvCommand> _envs = [];
     private readonly ConstantBuffer<ConstantBufferModel>? _modelBuffer;
@@ -99,6 +100,15 @@ public sealed class RenderingPipeline : IDisposable
             DepthClipEnable = true
         };
         device.CreateRasterizerState(cullFrontDesc);
+
+        RasterizerDescription cullNoneDesc = new()
+        {
+            CullMode = CullMode.None,
+            FillMode = FillMode.Solid,
+            FrontCounterClockwise = false,
+            DepthClipEnable = true
+        };
+        _cullNoneState = device.CreateRasterizerState(cullNoneDesc);
 
         BlendDescription additiveBlendDesc = new();
         additiveBlendDesc.RenderTarget[0] = new RenderTargetBlendDescription
@@ -322,7 +332,7 @@ public sealed class RenderingPipeline : IDisposable
 
     private void RenderWaters(ID3D11DeviceContext context)
     {
-        context.RSSetState(null);
+        context.RSSetState(_cullNoneState);
         context.OMSetDepthStencilState(_defaultDepthState);
         context.OMSetBlendState(null);
         context.OMSetRenderTargets(GI.Instance.RenderTargetView, GI.Instance.DepthStencilView);
