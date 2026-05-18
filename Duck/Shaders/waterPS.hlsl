@@ -63,30 +63,31 @@ float fresnel(float n1, float n2, float3 n, float3 v)
 
 float4 PS(PS_INPUT input) : SV_TARGET
 {
-//    float3 color = envMap.Sample(samp, input.TexCoord).rgb;
-//    color = pow(color, 0.4545f);
-//    return float4(color, 1.0f);
-    
+    const float BOX_SIZE = 5.0f;
+    float4 texColor = Tex.Sample(Sampler, input.UV);
+
+    if (any(abs(input.WorldPos.xz) >= BOX_SIZE))
+        return texColor;
+
     float3 viewVec = normalize(CamPos - input.WorldPos);
-    
+
     float refractionCoeff = 3.0f/4.0f;
-    float3 norm = NormTex.Sample(Sampler, input.UV).xyz;
+    float3 norm = normalize(NormTex.Sample(Sampler, input.UV).xyz * 2.0f - 1.0f);
     if (dot(norm, viewVec) < 0) {
         norm = -norm;
         refractionCoeff = 1.0f / refractionCoeff;
     }
-    
+
     float3 reflected = reflect(-viewVec, norm);
     float3 refracted = refract(-viewVec, norm, refractionCoeff);
     float3 reflectedInter = intersectRay(input.WorldPos, reflected);
     float3 refractedInter = intersectRay(input.WorldPos, refracted);
-    
+
     float fresnelCoeff = fresnel(1.0f, 4.0f/3.0f, norm, viewVec);
-    float4 reflectedCol = EnvMap.Sample(Sampler, reflectedInter);
-    float4 refractedCol = EnvMap.Sample(Sampler, refractedInter);
-    float4 color = lerp(refractedCol, reflectedCol, fresnelCoeff);
-    
-    float4 texColor = Tex.Sample(Sampler, input.UV);
+    float3 reflectedCol = pow(EnvMap.Sample(Sampler, reflectedInter).rgb, 0.4545f);
+    float3 refractedCol = pow(EnvMap.Sample(Sampler, refractedInter).rgb, 0.4545f);
+    float4 color = float4(lerp(refractedCol, reflectedCol, fresnelCoeff), 1.0f);
+
     color.r = lerp(texColor.r, color.r, SurfaceColor.r);
     color.g = lerp(texColor.g, color.g, SurfaceColor.g);
     color.b = lerp(texColor.b, color.b, SurfaceColor.b);
