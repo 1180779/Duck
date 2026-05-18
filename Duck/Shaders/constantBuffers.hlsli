@@ -10,6 +10,7 @@ cbuffer ConstantBuffer : register(b1)
 {
     matrix View;
     matrix Projection;
+    float3 CamPos;
 }
 
 cbuffer ConstantBuffer : register(b2)

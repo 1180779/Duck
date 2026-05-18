@@ -13,6 +13,8 @@ public sealed class WaterQuad : Quad
 {
     public WaterQuad()
     {
+        Color = new Vector4(1.0f);
+        
         H = 2.0f / (N - 1.0f);
         Dt = 1 / (float)N;
         A = C * C / H / H * Dt * Dt;
@@ -92,7 +94,7 @@ public sealed class WaterQuad : Quad
 
     public override void Render(Camera camera)
     {
-        GI.Instance.Pipeline.SubmitOpaque(_mesh, Transform.ModelMatrix, Transform.InvModelMatrix, Color,
+        GI.Instance.Pipeline.SubmitWater(_mesh, Transform.ModelMatrix, Transform.InvModelMatrix, Color,
             normTexture: NormalTexture
         );
     }

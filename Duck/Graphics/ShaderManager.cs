@@ -30,6 +30,7 @@ public sealed class ShaderManager : IDisposable
         GPass,
         LightPass,
         AmbientPass,
-        Env
+        Env,
+        Water
     }
 }

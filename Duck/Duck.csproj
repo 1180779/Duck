@@ -40,6 +40,9 @@
         <EmbeddedResource Include="Shaders\unlitPS.hlsl"/>
         <EmbeddedResource Include="Shaders\unlitVS.hlsl"/>
         <EmbeddedResource Include="Shaders\ambientPassPS.hlsl"/>
+        <EmbeddedResource Include="Shaders\water.hlsli"/>
+        <EmbeddedResource Include="Shaders\waterPS.hlsl"/>
+        <EmbeddedResource Include="Shaders\waterVS.hlsl"/>
         <EmbeddedResource Include="Textures/charolettenbrunn_park_4k.dds"/>
     </ItemGroup>
 

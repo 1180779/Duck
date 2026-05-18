@@ -8,6 +8,17 @@ using Vortice.Mathematics;
 
 namespace Duck.Graphics;
 
+public struct WaterCommand
+{
+    public ID3D11ShaderResourceView? EnvCubeTexture;
+    public Matrix4x4 InvTransform;
+    public Mesh Mesh;
+    public ID3D11ShaderResourceView? NormTexture;
+    public Vector4 SurfaceColor;
+    public ID3D11ShaderResourceView? Texture;
+    public Matrix4x4 Transform;
+}
+
 public struct EnvCommand
 {
     public ID3D11ShaderResourceView CubeTexture;
@@ -38,6 +49,7 @@ public sealed class RenderingPipeline : IDisposable
     private readonly ID3D11DepthStencilState? _noDepthState;
     private readonly ID3D11DepthStencilState? _noDepthWriteState;
     private readonly List<OpaqueCommand> _opaques = [];
+    private readonly List<WaterCommand> _waters = [];
 
     public RenderingPipeline()
     {
@@ -120,6 +132,12 @@ public sealed class RenderingPipeline : IDisposable
         _colorBuffer = new ConstantBuffer<ConstantBufferSurfaceColor>();
     }
 
+    public ID3D11ShaderResourceView? EnvCubeTexture
+    {
+        get;
+        set;
+    }
+
     public void Dispose()
     {
         _modelBuffer?.Dispose();
@@ -146,6 +164,8 @@ public sealed class RenderingPipeline : IDisposable
         RenderGPass(context, mainCamera);
         RenderLightPass(context, mainCamera);
         RenderEnvs(context, mainCamera);
+        RenderWaters(context);
+
         ClearQueues();
     }
 
@@ -176,6 +196,25 @@ public sealed class RenderingPipeline : IDisposable
         );
     }
 
+    public void SubmitWater(
+        Mesh mesh, Matrix4x4 transform, Matrix4x4 invTransform, Vector4 color, ID3D11ShaderResourceView? texture = null,
+        ID3D11ShaderResourceView? normTexture = null, ID3D11ShaderResourceView? envCubeTexture = null
+    )
+    {
+        _waters.Add(
+            new WaterCommand
+            {
+                Mesh = mesh,
+                Transform = transform,
+                InvTransform = invTransform,
+                SurfaceColor = color,
+                Texture = texture,
+                NormTexture = normTexture,
+                EnvCubeTexture = envCubeTexture
+            }
+        );
+    }
+
     private void ClearGBuffer(ID3D11DeviceContext context)
     {
         Color4 clearColor = new(0.0f, 0.0f, 0.0f, 0.0f);
@@ -189,6 +228,7 @@ public sealed class RenderingPipeline : IDisposable
     {
         _opaques.Clear();
         _envs.Clear();
+        _waters.Clear();
     }
 
     private void DrawOpaqueBatch(ID3D11DeviceContext context, Mesh? excludeMesh = null)
@@ -278,5 +318,39 @@ public sealed class RenderingPipeline : IDisposable
 
         context.PSSetShaderResources(0, [null!, null!, null!]);
         context.OMSetBlendState(null);
+    }
+
+    private void RenderWaters(ID3D11DeviceContext context)
+    {
+        context.RSSetState(null);
+        context.OMSetDepthStencilState(_defaultDepthState);
+        context.OMSetBlendState(null);
+        context.OMSetRenderTargets(GI.Instance.RenderTargetView, GI.Instance.DepthStencilView);
+        context.PSSetSamplers(0, [GI.Instance.DefaultSampler]);
+
+        Shader waterShader = GI.Instance.ShaderManager.GetShader(ShaderManager.ShaderType.Water);
+        waterShader.Use();
+        context.IASetPrimitiveTopology(PrimitiveTopology.TriangleList);
+
+        foreach (WaterCommand cmd in _waters)
+        {
+            _modelBuffer?.Update(new ConstantBufferModel { Model = cmd.Transform });
+            _colorBuffer?.Update(new ConstantBufferSurfaceColor { SurfaceColor = cmd.SurfaceColor });
+
+            context.PSSetShaderResources(0, [cmd.Texture ?? GI.Instance.DefaultWhiteTextureSRV]);
+            context.PSSetShaderResources(1, [cmd.NormTexture ?? GI.Instance.DefaultNormTexture]);
+
+            ID3D11ShaderResourceView envCube = cmd.EnvCubeTexture ??
+                                               EnvCubeTexture ??
+                                               throw new Exception("Env cube texture not available");
+            context.PSSetShaderResources(2,
+                [
+                    envCube
+                ]
+            );
+
+            cmd.Mesh.Bind();
+            context.DrawIndexed((uint)cmd.Mesh.IndexCount, 0, 0);
+        }
     }
 }

@@ -88,7 +88,7 @@ internal static class Program
         [
             new("POSITION", 0, Format.R32G32B32_Float, 0, 0)
         ];
-        InputElementDescription[] positionNormalInputElements =
+        InputElementDescription[] positionNormalUvInputElements =
         [
             new("POSITION", 0, Format.R32G32B32_Float, 0, 0),
             new("NORMAL", 0, Format.R32G32B32_Float, 12, 0),
@@ -96,10 +96,10 @@ internal static class Program
         ];
 
         Shader unlitShader = new($"{GI.ShadersEmbResPath}unlitVS.hlsl", $"{GI.ShadersEmbResPath}unlitPS.hlsl",
-            positionNormalInputElements
+            positionNormalUvInputElements
         );
         Shader gpassShader = new($"{GI.ShadersEmbResPath}gPassVS.hlsl",
-            $"{GI.ShadersEmbResPath}gPassPS.hlsl", positionNormalInputElements
+            $"{GI.ShadersEmbResPath}gPassPS.hlsl", positionNormalUvInputElements
         );
         Shader lightPassShader = new($"{GI.ShadersEmbResPath}lightPassVS.hlsl",
             $"{GI.ShadersEmbResPath}lightPassPS.hlsl", []
@@ -110,12 +110,16 @@ internal static class Program
         Shader envShader = new($"{GI.ShadersEmbResPath}envVS.hlsl", $"{GI.ShadersEmbResPath}envPS.hlsl",
             positionInputElements
         );
+        Shader waterShader = new($"{GI.ShadersEmbResPath}waterVS.hlsl", $"{GI.ShadersEmbResPath}waterPS.hlsl",
+            positionNormalUvInputElements
+        );
 
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Unlit, unlitShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.GPass, gpassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.LightPass, lightPassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.AmbientPass, ambientPassShader);
         GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Env, envShader);
+        GI.Instance.ShaderManager.AddShader(ShaderManager.ShaderType.Water, waterShader);
 
         WaterQuad myQuad = new()
         {
@@ -141,13 +145,12 @@ internal static class Program
         GameObjects.Add(s_camera);
 
         using Stream stream = Resources.GetResourceStream($"{GI.TextureEmbResPath}charolettenbrunn_park_4k.dds");
-        GameObjects.Add(new InsideCube
-            {
-                CubeTexture =
-                    GI.Instance.LoadCubeTextureFromStream(
-                        stream
-                    )
-            }
+        ID3D11ShaderResourceView cubeTexture =
+            GI.Instance.LoadCubeTextureFromStream(
+                stream
+            );
+        GI.Instance.Pipeline.EnvCubeTexture = cubeTexture;
+        GameObjects.Add(new InsideCube { CubeTexture = cubeTexture }
         );
     }
 

@@ -30,6 +30,7 @@ public class Quad : Entity
     public Vector4 Color
     {
         get;
+        protected init;
     } = new(1.0f, 1.0f, 1.0f, 0.5f);
 
     public override void Render(Camera camera)

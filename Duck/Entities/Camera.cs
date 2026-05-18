@@ -140,7 +140,7 @@ public class Camera : Entity, IDisposable
         {
             View = ViewMatrix,
             Projection = ProjectionMatrix,
-            Pos = pos,
+            CamPos = pos
         });
         _viewProjBuffer.Bind(1);
     }
@@ -151,7 +151,7 @@ public class Camera : Entity, IDisposable
         {
             View = ViewMatrix,
             Projection = ProjectionMatrix,
-            Pos = Position,
+            CamPos = Position
         });
         _viewProjBuffer.Bind(1);
     }

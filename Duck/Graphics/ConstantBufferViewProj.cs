@@ -8,5 +8,5 @@ public struct ConstantBufferViewProj
 {
     [FieldOffset(0)] public Matrix4x4 View;
     [FieldOffset(64)] public Matrix4x4 Projection;
-    [FieldOffset(128)] public Vector3 Pos;
+    [FieldOffset(128)] public Vector3 CamPos;
 }
