@@ -1,6 +1,5 @@
 using System.Numerics;
 
-using Duck.Entities.PumaParser;
 using Duck.Graphics;
 
 using Vortice.Direct3D11;
@@ -14,7 +13,7 @@ public sealed class Duck : Entity, IDisposable
 
     public Duck(Vector3 position, Vector4? color = null, Vector3 meshPivot = default)
     {
-        DuckParser parser = new();
+        DuckParser.DuckParser parser = new();
         parser.Load("duck.txt");
         _mesh = parser.BuildMesh(meshPivot);
 

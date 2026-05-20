@@ -3,7 +3,7 @@ using System.Numerics;
 
 using Duck.Graphics;
 
-namespace Duck.Entities.PumaParser;
+namespace Duck.Entities.DuckParser;
 
 public sealed class DuckParser
 {

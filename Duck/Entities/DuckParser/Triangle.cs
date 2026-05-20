@@ -1,4 +1,4 @@
-namespace Duck.Entities.PumaParser;
+namespace Duck.Entities.DuckParser;
 
 public sealed record Triangle
 {
