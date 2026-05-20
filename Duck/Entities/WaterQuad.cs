@@ -11,6 +11,19 @@ namespace Duck.Entities;
 
 public sealed class WaterQuad : OneSidedQuad
 {
+    public const uint N = 256;
+    public const float RainHeighPerturbationMax = 0.25f;
+
+    public const float RainHeighPerturbationMin = 0.05f;
+    public const float RainHeightPerturbationDiff = RainHeighPerturbationMax - RainHeighPerturbationMin;
+
+    /// <summary>
+    ///     Probability that a rain particle will drop in current frame in a single point of the height mesh.
+    /// </summary>
+    public const double RainProbability = 0.000005 * RainProbabilityScalingFactor;
+
+    private const double RainProbabilityScalingFactor = 256 / (double)N * (256 / (double)N);
+
     public WaterQuad()
     {
         Color = new Vector4(1.0f);
@@ -27,7 +40,6 @@ public sealed class WaterQuad : OneSidedQuad
         NormalTexture = CreateNormalTexture();
 
         InitDij();
-        TestNormalsPerturbations();
     }
 
     public float A
@@ -59,11 +71,6 @@ public sealed class WaterQuad : OneSidedQuad
     {
         get;
     }
-
-    public uint N
-    {
-        get;
-    } = 256;
 
     public ID3D11ShaderResourceView NormalTexture
     {
@@ -108,6 +115,7 @@ public sealed class WaterQuad : OneSidedQuad
 
     public override void Update(float dt)
     {
+        RandomPerturbations();
         UpdateHeights();
         UpdateNormalTexture();
     }
@@ -205,15 +213,23 @@ public sealed class WaterQuad : OneSidedQuad
         return result;
     }
 
-    private void TestNormalsPerturbations()
+    /// <summary>
+    ///     Simulate rain by adding random height perturbations.
+    /// </summary>
+    private void RandomPerturbations()
     {
-        int cx = (int)N / 2, cy = (int)N / 2;
-        for (int i = 0; i < N; i++)
+        for (int i = 0; i < N; ++i)
         {
             for (int j = 0; j < N; j++)
             {
-                float dx = i - cx, dy = j - cy;
-                Z[i, j] = MathF.Exp(-((dx * dx) + (dy * dy)) / 10.0f);
+                if (!(Random.Shared.NextDouble() < RainProbability))
+                {
+                    continue;
+                }
+
+                double heightPerturbation = (Random.Shared.NextDouble() * RainHeightPerturbationDiff) +
+                                            RainHeighPerturbationMin;
+                Z[i, j] += (float)heightPerturbation;
             }
         }
     }
