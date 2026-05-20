@@ -14,6 +14,8 @@ public sealed class GraphicsContext : IDisposable
     public const string ProjectNamespace = "Duck";
     public const string ShadersEmbResPath = $"{ProjectNamespace}.Shaders.";
     public const string TextureEmbResPath = $"{ProjectNamespace}.{TextureDir}.";
+    public const string AssetsEmbResPath = $"{ProjectNamespace}.Assets";
+    public const string MeshesEmbResPath = $"{AssetsEmbResPath}.Meshes.";
     public const string TextureDir = "Textures";
 
     private static GI? s_instance;

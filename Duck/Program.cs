@@ -137,6 +137,14 @@ internal static class Program
         };
         GameObjects.Add(myQuad);
 
+        using Stream duckStream = Resources.GetResourceStream($"{GI.TextureEmbResPath}ducktex.jpg");
+        ID3D11ShaderResourceView duckTexture =
+            GI.Instance.LoadTextureFromStream(
+                duckStream
+            );
+        Entities.Duck duck = new(new Vector3()) { Texture = duckTexture };
+        GameObjects.Add(duck);
+
         PointLight pointLight = new(
             new Vector3(0.0f, 2.5f, 0.0f),
             new Vector4(1.0f, 1.0f, 1.0f, 1.0f)

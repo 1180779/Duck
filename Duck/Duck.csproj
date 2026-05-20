@@ -24,6 +24,7 @@
         <None Remove="Shaders\tex.png"/>
         <None Remove="Shaders\unlitPS.hlsl"/>
         <None Remove="Shaders\unlitVS.hlsl"/>
+        <None Remove="Assets\Meshes\duck.txt"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -45,6 +46,8 @@
         <EmbeddedResource Include="Shaders\waterVS.hlsl"/>
         <EmbeddedResource Include="Textures/charolettenbrunn_park_4k.dds"/>
         <EmbeddedResource Include="Textures/scuba_suede_diff_4k.jpg"/>
+        <EmbeddedResource Include="Textures/ducktex.jpg"/>
+        <EmbeddedResource Include="Assets\Meshes\duck.txt"/>
     </ItemGroup>
 
     <ItemGroup>

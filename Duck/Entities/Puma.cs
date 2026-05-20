@@ -39,7 +39,7 @@ public sealed class Puma : Entity, IDisposable
         Sheet = sheet;
         for (int i = 0; i < PartCount; i++)
         {
-            PumaPart part = new();
+            DuckParser part = new();
             part.Load(Path.Combine(meshFolder, $"mesh{i + 1}.txt"));
             _meshes[i] = part.BuildMesh(PivotPoints[i]);
 
