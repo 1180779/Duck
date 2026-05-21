@@ -277,10 +277,11 @@ public sealed class GraphicsContext : IDisposable
         {
             SamplerDescription samplerDesc = new()
             {
-                Filter = Filter.MinMagMipPoint,
-                AddressU = TextureAddressMode.Clamp,
-                AddressV = TextureAddressMode.Clamp,
-                AddressW = TextureAddressMode.Clamp,
+                Filter = Filter.Anisotropic,
+                MaxAnisotropy = 16,
+                AddressU = TextureAddressMode.Wrap,
+                AddressV = TextureAddressMode.Wrap,
+                AddressW = TextureAddressMode.Wrap,
                 ComparisonFunc = ComparisonFunction.Never,
                 MinLOD = 0,
                 MaxLOD = float.MaxValue
@@ -288,6 +289,7 @@ public sealed class GraphicsContext : IDisposable
 
             return device.CreateSamplerState(samplerDesc);
         }
+
 
         public static ID3D11ShaderResourceView WhiteTexture(ID3D11Device device)
         {
