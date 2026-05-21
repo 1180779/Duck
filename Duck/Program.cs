@@ -142,7 +142,7 @@ internal static class Program
             GI.Instance.LoadTextureFromStream(
                 duckStream
             );
-        Entities.Duck duck = new(new Vector3()) { Texture = duckTexture };
+        Entities.Duck duck = new(new Vector3()) { Texture = duckTexture, Water = myQuad };
         GameObjects.Add(duck);
 
         PointLight pointLight = new(

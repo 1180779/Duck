@@ -113,6 +113,20 @@ public sealed class WaterQuad : OneSidedQuad
         );
     }
 
+    /// <summary>
+    ///     Perturb the height map at the given world position (XZ plane).
+    /// </summary>
+    public void PerturbAt(Vector3 worldPos, float magnitude = RainHeighPerturbationMax)
+    {
+        float halfExtent = Transform.Scale;
+        int i = (int)((halfExtent - worldPos.Z) / (2f * halfExtent) * (N - 1));
+        int j = (int)((worldPos.X + halfExtent) / (2f * halfExtent) * (N - 1));
+        if (i >= 0 && i < N && j >= 0 && j < N)
+        {
+            Z[i, j] += magnitude;
+        }
+    }
+
     public override void Update(float dt)
     {
         RandomPerturbations();
